@@ -1,0 +1,88 @@
+@import "tailwindcss";
+/* Menor dashboard theme tokens */
+
+:root {
+  color-scheme: light;
+  --background: #f7f9fc;
+  --foreground: #111827;
+  --surface: #ffffff;
+  --surface-muted: #f3f6fb;
+  --line: #e5eaf2;
+  --muted: #64748b;
+  --brand: #ff5a24;
+  --brand-hover: #f0441e;
+  --sidebar: #ffffff;
+  --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #07111f;
+  --foreground: #f8fafc;
+  --surface: #0d1b2b;
+  --surface-muted: #102033;
+  --line: #1c3045;
+  --muted: #a6b4c8;
+  --brand: #ff5a24;
+  --brand-hover: #f0441e;
+  --sidebar: #081421;
+  --shadow-card: 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --background: #07111f;
+    --foreground: #f8fafc;
+    --surface: #0d1b2b;
+    --surface-muted: #102033;
+    --line: #1c3045;
+    --muted: #a6b4c8;
+    --brand: #ff5a24;
+    --brand-hover: #f0441e;
+    --sidebar: #081421;
+    --shadow-card: 0 14px 34px rgba(0, 0, 0, 0.28);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-sidebar: var(--sidebar);
+  --font-sans: var(--font-plex), var(--font-geist-sans), var(--font-noto-arabic);
+}
+
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) & {
+      @slot;
+    }
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+html:has([data-marketing]) {
+  scroll-behavior: smooth;
+}
+
+body:has([data-public-menu]) > header,
+body:has([data-dashboard]) > header,
+body:has([data-marketing]) > header,
+body:has([data-auth]) > header {
+  display: none !important;
+}

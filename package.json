@@ -1,0 +1,40 @@
+{
+  "name": "menora",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck",
+    "db:test": "node scripts/test-database.mjs",
+    "test": "tsx --test src/lib/auth/auth.test.ts src/lib/businesses/business.test.ts src/lib/i18n/format.test.ts src/lib/menus/menu.test.ts src/lib/menus/public-menu.test.ts src/lib/menus/public-url.test.ts src/lib/menus/qr-palette.test.ts src/lib/menus/appearance.test.ts src/lib/billing/paypal.test.ts src/lib/email/email.test.ts src/lib/admin/admin.test.ts src/lib/analytics/analytics.test.ts src/lib/domains/domain.test.ts src/lib/menus/structured-data.test.ts src/lib/dashboard/overview.test.ts src/lib/homepage/homepage.test.ts"
+  },
+  "dependencies": {
+    "@supabase/ssr": "0.12.0",
+    "@supabase/supabase-js": "2.109.0",
+    "client-only": "^0.0.1",
+    "lucide-react": "^1.55.0",
+    "next": "16.4.0",
+    "qrcode": "^1.5.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "resend": "^6.32.1",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^20",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.0",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}
