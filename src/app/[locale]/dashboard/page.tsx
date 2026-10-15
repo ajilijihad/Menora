@@ -89,7 +89,7 @@ async function DashboardContent({
   };
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col">
+    <main className="flex flex-1 flex-col">
       <h1 className="text-3xl font-semibold tracking-tight">{displayName ? home.welcome.replace("{name}", displayName) : home.title}</h1>
       <p className="mt-2 text-sm text-muted">{home.homeDescription}</p>
       {authNotice === "password_updated" ? (
@@ -169,7 +169,7 @@ async function DashboardContent({
           })}
         </div>
       )}
-      <section className="mt-4 rounded-3xl border border-dashed border-orange-200 bg-orange-50/40 p-4 dark:border-orange-950/50 dark:bg-orange-950/10 sm:p-5">
+      <section className="my-4 rounded-3xl border border-dashed border-orange-200 bg-orange-50/40 p-4 dark:border-orange-950/50 dark:bg-orange-950/10 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex gap-3">
             <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-orange-100 text-brand dark:bg-orange-950/50">
