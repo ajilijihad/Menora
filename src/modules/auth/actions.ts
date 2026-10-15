@@ -1,6 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -401,5 +401,14 @@ export async function signOutAction(formData: FormData) {
     await supabase.auth.signOut();
   }
 
+  const store = await cookies();
+  for (const cookie of store.getAll()) {
+    if (cookie.name.startsWith("sb-") && cookie.name.includes("auth-token")) {
+      store.set(cookie.name, "", { path: "/", maxAge: 0 });
+    }
+  }
+
+  revalidatePath("/en", "layout");
+  revalidatePath("/ar", "layout");
   redirect(`/${locale}`);
 }

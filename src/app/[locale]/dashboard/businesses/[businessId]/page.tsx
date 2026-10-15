@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { BarChart3, Bookmark, Box, Star } from "lucide-react";
-import { connection } from "next/server";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense } from "react";
 
 import { Notice } from "@/components/auth/notice";

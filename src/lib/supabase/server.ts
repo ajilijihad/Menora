@@ -2,7 +2,6 @@ import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { connection } from "next/server";
 
 import { getPublicEnv } from "@/lib/env/public";
 
@@ -12,9 +11,12 @@ import type { Database } from "./database.types";
  * Session-scoped Supabase client for Server Components, Server Functions,
  * and Route Handlers. Tenant access is enforced by Postgres row-level security.
  * Create a new client for each request.
+ *
+ * `cookies()` already postpones this to the incoming request. Do not await
+ * `connection()` here — that is uncached IO and blocks instant navigations
+ * from every layout that builds a session client.
  */
 export async function createServerSupabaseClient() {
-  await connection();
   const env = getPublicEnv();
   const cookieStore = await cookies();
 

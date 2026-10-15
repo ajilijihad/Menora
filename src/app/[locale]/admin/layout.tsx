@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense, type ReactNode } from "react";
 
 import { AdminNav } from "@/components/admin/admin-nav";
@@ -45,6 +46,7 @@ async function AdminGuard({
   locale: Locale;
   children: ReactNode;
 }) {
+  await connection();
   const user = await getAuthenticatedUser();
   if (!user) {
     redirect(`/${locale}/login?next=${encodeURIComponent(`/${locale}/admin`)}`);

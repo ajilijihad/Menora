@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { imageExtension, maxImageBytes } from "@/lib/businesses/media";
+import { refreshHomepageCache } from "@/lib/homepage/cache";
 import { isHomepageImagePath, readHomepage } from "@/lib/homepage/schema";
 import type { Json } from "@/lib/supabase/database.types";
 import { requirePlatformAdmin } from "@/modules/admin/guard";
@@ -36,6 +37,7 @@ export async function saveHomepageAction(payload: unknown): Promise<{ ok: true }
     return { ok: false, code: write.error.message.includes("platform_homepage") ? "unconfigured" : "failed" };
   }
 
+  refreshHomepageCache();
   revalidatePath("/en");
   revalidatePath("/ar");
   return { ok: true };

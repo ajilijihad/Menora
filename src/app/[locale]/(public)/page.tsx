@@ -1,19 +1,32 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
+import { Suspense } from "react";
 
 import { LandingPage } from "@/components/home/landing-page";
 import { EnvConfigError } from "@/lib/env/error";
 import { getPublicEnv } from "@/lib/env/public";
 import { homepageImageUrl } from "@/lib/homepage/media";
-import { localizedText } from "@/lib/homepage/schema";
+import { localizedText, type HomepageContent, type PublicPlan } from "@/lib/homepage/schema";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { homeChrome } from "@/lib/i18n/home-copy";
-import { isLocale } from "@/lib/i18n/locales";
+import { homeChrome, type HomeChrome } from "@/lib/i18n/home-copy";
+import { isLocale, type Locale } from "@/lib/i18n/locales";
 import { menuQrSvg } from "@/lib/menus/qr-code";
 import { appOrigin } from "@/lib/menus/public-url";
-import { hasAuthSessionCookie } from "@/lib/auth/session-cookie";
 import { getAuthenticatedUser } from "@/modules/auth";
 import { loadHomepage, loadPublicPlans } from "@/modules/homepage/queries";
+
+type HomeShell = {
+  locale: Locale;
+  brand: string;
+  dashboardLabel: string;
+  logoutLabel: string;
+  content: HomepageContent;
+  plans: PublicPlan[];
+  chrome: HomeChrome;
+  qrSvg: string | null;
+  mediaBase: string | null;
+};
 
 export async function generateMetadata({
   params,
@@ -59,12 +72,19 @@ export default async function HomePage({
     notFound();
   }
 
-  const [page, plans, user, sessionCookie] = await Promise.all([
-    loadHomepage(),
-    loadPublicPlans(),
-    getAuthenticatedUser().catch(() => null),
-    hasAuthSessionCookie().catch(() => false),
-  ]);
+  const shell = await loadHomeShell(locale);
+
+  return (
+    <div data-marketing="">
+      <Suspense fallback={<LandingPage {...shell} signedIn={false} />}>
+        <HomeWithSession shell={shell} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function loadHomeShell(locale: Locale): Promise<HomeShell> {
+  const [page, plans] = await Promise.all([loadHomepage(), loadPublicPlans()]);
   let mediaBase: string | null = null;
   let origin: string | null = null;
   try {
@@ -76,23 +96,28 @@ export default async function HomePage({
       throw error;
     }
   }
-  const qrSvg = origin ? await menuQrSvg(`${origin}/${locale}/register`) : null;
   const dict = getDictionary(locale);
+  return {
+    locale,
+    brand: dict.brand,
+    dashboardLabel: dict.nav.dashboard,
+    logoutLabel: dict.nav.logout,
+    content: page.content,
+    plans,
+    chrome: homeChrome(locale),
+    qrSvg: origin ? await menuQrSvg(`${origin}/${locale}/register`) : null,
+    mediaBase,
+  };
+}
 
-  return (
-    <div data-marketing="">
-      <LandingPage
-        locale={locale}
-        brand={dict.brand}
-        dashboardLabel={dict.nav.dashboard}
-        logoutLabel={dict.nav.logout}
-        content={page.content}
-        plans={plans}
-        chrome={homeChrome(locale)}
-        qrSvg={qrSvg}
-        signedIn={Boolean(user) || sessionCookie}
-        mediaBase={mediaBase}
-      />
-    </div>
-  );
+async function HomeWithSession({ shell }: { shell: HomeShell }) {
+  await connection();
+  let signedIn = false;
+  try {
+    signedIn = Boolean(await getAuthenticatedUser());
+  } catch {
+    signedIn = false;
+  }
+
+  return <LandingPage {...shell} signedIn={signedIn} />;
 }

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { connection } from "next/server";
 import { cache } from "react";
 
 import { EnvConfigError } from "@/lib/env/error";
@@ -7,6 +8,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const getAuthenticatedUser = cache(async function getAuthenticatedUser() {
   try {
+    await connection();
     const supabase = await createServerSupabaseClient();
     const { data, error } = await supabase.auth.getUser();
 
