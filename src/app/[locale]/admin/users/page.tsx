@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { AdminFilters, AdminNotice, AdminPager, AdminSection, adminFieldClassName, adminWhen } from "@/components/admin/frame";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select } from "@/components/ui/select";
 import { LoadingState } from "@/components/states/loading-state";
 import { StatusPanel, statusActionClassName } from "@/components/states/status-panel";
 import { formatAdminMoney } from "@/lib/admin/overview";
@@ -122,20 +124,22 @@ async function Users({ locale, searchParams }: { locale: Locale; searchParams: P
               <>
                   <label className="flex flex-col gap-2 text-sm font-medium">
                     {copy.upgradePlan}
-                    <select name="planId" required className={adminFieldClassName}>
-                      {choices.map((plan) => (
-                        <option key={plan.id} value={plan.id}>
-                          {plan.name} · {formatAdminMoney(plan.amountCents, plan.currency, locale)}
-                        </option>
-                      ))}
-                    </select>
+                    <Select
+                      name="planId"
+                      required
+                      options={choices.map((plan) => ({
+                        value: plan.id,
+                        label: `${plan.name} · ${formatAdminMoney(plan.amountCents, plan.currency, locale)}`,
+                      }))}
+                      className={`${adminFieldClassName} w-full`}
+                    />
                   </label>
                   <label className="flex flex-col gap-2 text-sm font-medium">
                     {copy.reason}
                     <input name="reason" required minLength={8} maxLength={500} className={adminFieldClassName} />
                   </label>
                   <label className="flex items-center gap-2 text-sm sm:col-span-2">
-                    <input type="checkbox" name="confirm" value="yes" required />
+                    <Checkbox name="confirm" value="yes" required />
                     {copy.confirm}
                   </label>
                   <input type="hidden" name="locale" value={locale} />

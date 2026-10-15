@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { Notice } from "@/components/auth/notice";
+import { Select } from "@/components/ui/select";
 import { statusActionClassName } from "@/components/states/status-panel";
 import { adminHref } from "@/lib/admin/list";
 import type { AdminCopy } from "@/lib/i18n/admin-copy";
@@ -65,12 +66,12 @@ export function AdminFilters({
       {statuses ? (
         <label className="flex flex-col gap-2 text-sm font-medium">
           {copy.status}
-          <select name="status" defaultValue={status ?? "all"} className={adminFieldClassName}>
-            <option value="all">{copy.all}</option>
-            {statuses.map((item) => (
-              <option key={item.value} value={item.value}>{item.label}</option>
-            ))}
-          </select>
+          <Select
+            name="status"
+            defaultValue={status ?? "all"}
+            options={[{ value: "all", label: copy.all }, ...statuses.map((item) => ({ value: item.value, label: item.label }))]}
+            className={`${adminFieldClassName} w-full`}
+          />
         </label>
       ) : null}
       <button type="submit" className={statusActionClassName}>{copy.apply}</button>

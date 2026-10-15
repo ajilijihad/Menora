@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { AdminPager } from "@/components/admin/frame";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select } from "@/components/ui/select";
 import { adminHref } from "@/lib/admin/list";
 import type { AdminCopy } from "@/lib/i18n/admin-copy";
 import { formatMoney } from "@/lib/i18n/format";
@@ -124,12 +126,14 @@ export function PlansManager({ locale, copy, plans, total, pageSize, counts, fil
             </label>
             <label className="block sm:w-44">
               <span className="sr-only">{page.currency}</span>
-              <select name="currency" defaultValue={filters.currency} onChange={(event) => event.currentTarget.form?.requestSubmit()} className={fieldClassName}>
-                <option value="">{page.allCurrencies}</option>
-                {summary.currencies.map((currency) => (
-                  <option key={currency} value={currency}>{currency}</option>
-                ))}
-              </select>
+              <Select
+                name="currency"
+                ariaLabel={page.currency}
+                defaultValue={filters.currency}
+                submitOnChange
+                options={[{ value: "", label: page.allCurrencies }, ...summary.currencies.map((currency) => ({ value: currency, label: currency }))]}
+                className={fieldClassName}
+              />
             </label>
           </form>
         </div>
@@ -319,16 +323,18 @@ function PlanEditor({
               {preview ? <span className="text-xs text-muted">{preview} {copy.perMonth}</span> : null}
             </Field>
             <Field label={copy.currency} htmlFor="plan-currency" required>
-              <select id="plan-currency" name="currency" value={currency} onChange={(event) => setCurrency(event.target.value)} className={fieldClassName}>
-                {currencies.map((item) => (
-                  <option key={item.code} value={item.code}>{item.code}</option>
-                ))}
-              </select>
+              <Select
+                id="plan-currency"
+                name="currency"
+                required
+                value={currency}
+                onValueChange={setCurrency}
+                options={currencies.map((item) => ({ value: item.code, label: item.code }))}
+                className={fieldClassName}
+              />
             </Field>
             <Field label={copy.interval} htmlFor="plan-interval">
-              <select id="plan-interval" disabled defaultValue="month" className={fieldClassName}>
-                <option value="month">{copy.monthly}</option>
-              </select>
+              <Select id="plan-interval" disabled defaultValue="month" options={[{ value: "month", label: copy.monthly }]} className={fieldClassName} />
               <span className="text-xs text-muted">{copy.intervalNote}</span>
             </Field>
             <Field label={copy.businessLimit} htmlFor="plan-businesses" required>
@@ -348,20 +354,8 @@ function PlanEditor({
         <fieldset className="rounded-2xl border border-line p-4">
           <legend className="px-1 text-sm font-semibold text-foreground">{copy.features}</legend>
           <div className="mt-3 flex flex-col gap-4">
-            <label className="flex items-start gap-3 text-sm">
-              <input type="checkbox" name="isActive" defaultChecked={plan?.is_active ?? true} className="mt-1 size-4 accent-brand" />
-              <span>
-                <span className="block font-medium">{copy.catalog}</span>
-                <span className="mt-0.5 block text-xs text-muted">{copy.catalogHint}</span>
-              </span>
-            </label>
-            <label className="flex items-start gap-3 text-sm">
-              <input type="checkbox" name="customDomains" defaultChecked={plan?.custom_domains ?? false} className="mt-1 size-4 accent-brand" />
-              <span>
-                <span className="block font-medium">{copy.domains}</span>
-                <span className="mt-0.5 block text-xs text-muted">{copy.domainsHint}</span>
-              </span>
-            </label>
+            <Checkbox name="isActive" defaultChecked={plan?.is_active ?? true} label={copy.catalog} description={copy.catalogHint} />
+            <Checkbox name="customDomains" defaultChecked={plan?.custom_domains ?? false} label={copy.domains} description={copy.domainsHint} />
             <Field label={copy.reason} htmlFor="plan-reason" required>
               <textarea
                 id="plan-reason"

@@ -11,6 +11,7 @@ import { CategorySorter } from "@/components/menu/category-sorter";
 import { MenuTabs } from "@/components/menu/menu-tabs";
 import { CurrencyForm } from "@/components/menu/currency-form";
 import { MenuFilters } from "@/components/menu/menu-filters";
+import { Select } from "@/components/ui/select";
 import { RowActions } from "@/components/menu/row-actions";
 import { ThemePreview } from "@/components/menu/theme-preview";
 import { LoadingState } from "@/components/states/loading-state";
@@ -218,10 +219,14 @@ async function MenuContent({
             </label>
             <label className="relative">
               <span className="sr-only">{copy.sort}</span>
-              <select name="csort" defaultValue={categorySort} aria-label={copy.sort} className="h-10 rounded-xl border border-line bg-surface px-3 pe-8 text-sm">
-                <option value="order">{copy.sortManual}</option>
-                <option value="name">{copy.sortName}</option>
-              </select>
+              <Select
+                name="csort"
+                ariaLabel={copy.sort}
+                defaultValue={categorySort}
+                submitOnChange
+                options={[{ value: "order", label: copy.sortManual }, { value: "name", label: copy.sortName }]}
+                className="h-10 rounded-xl border border-line bg-surface px-3 text-sm"
+              />
             </label>
             <Link href={`${base}/categories/new`} className={primaryClassName}><Plus className="size-4" />{copy.addCategory}</Link>
             <button type="submit" className="sr-only">{copy.search}</button>
@@ -281,17 +286,22 @@ async function MenuContent({
                 <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
                 <input name="q" defaultValue={term} placeholder={copy.searchLabel} className="h-10 w-full rounded-xl border border-line bg-surface ps-10 pe-3 text-sm" />
               </label>
-              <select name="category" defaultValue={selectedCategory ?? ""} aria-label={copy.categoryLabel} className="h-10 rounded-xl border border-line bg-surface px-3 text-sm">
-                <option value="">{copy.allCategories}</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>{displayCategory(category.name, category.nameAr, locale)}</option>
-                ))}
-              </select>
-              <select name="filter" defaultValue={filter} aria-label={copy.filterLabel} className="h-10 rounded-xl border border-line bg-surface px-3 text-sm">
-                {menuFilters.map((item) => (
-                  <option key={item} value={item}>{copy.filters[item]}</option>
-                ))}
-              </select>
+              <Select
+                name="category"
+                ariaLabel={copy.categoryLabel}
+                defaultValue={selectedCategory ?? ""}
+                submitOnChange
+                options={[{ value: "", label: copy.allCategories }, ...categories.map((category) => ({ value: category.id, label: displayCategory(category.name, category.nameAr, locale) }))]}
+                className="h-10 rounded-xl border border-line bg-surface px-3 text-sm"
+              />
+              <Select
+                name="filter"
+                ariaLabel={copy.filterLabel}
+                defaultValue={filter}
+                submitOnChange
+                options={menuFilters.map((item) => ({ value: item, label: copy.filters[item] }))}
+                className="h-10 rounded-xl border border-line bg-surface px-3 text-sm"
+              />
               <Link href={`${base}/products/new`} className={primaryClassName}><Plus className="size-4" />{copy.addProduct}</Link>
               <button type="submit" className="sr-only">{copy.search}</button>
             </MenuFilters>

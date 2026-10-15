@@ -1,28 +1,11 @@
 "use client";
 
-import {
-  ArrowRight,
-  Bean,
-  Box,
-  Check,
-  ChevronDown,
-  FileText,
-  Fish,
-  Flame,
-  Folder,
-  ImageIcon,
-  Leaf,
-  Loader2,
-  Milk,
-  Nut,
-  Puzzle,
-  Tag,
-  Trash2,
-  Wheat,
-} from "lucide-react";
+import { ArrowRight, Bean, Box, FileText, Fish, Flame, Folder, ImageIcon, Leaf, Loader2, Milk, Nut, Puzzle, Tag, Trash2, Wheat } from "lucide-react";
 import { useActionState, useRef, useState, type ComponentType, type ReactNode, type RefObject } from "react";
 
 import { Notice } from "@/components/auth/notice";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select } from "@/components/ui/select";
 import { imageExtension } from "@/lib/businesses/media";
 import type { MenuCopy } from "@/lib/i18n/menu-copy";
 import type { Locale } from "@/lib/i18n/locales";
@@ -151,23 +134,15 @@ export function ProductForm(props: ProductFormProps) {
             {props.copy.categoryLabel}
             <span className="text-brand" aria-hidden="true"> *</span>
           </label>
-          <div className="relative">
-            <Folder className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
-            <select
-              id="categoryId"
-              name="categoryId"
-              required
-              defaultValue={props.initial.categoryId}
-              className={`${fieldClassName} h-11 appearance-none ps-10 pe-10`}
-            >
-              {props.categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
-          </div>
+          <Select
+            id="categoryId"
+            name="categoryId"
+            required
+            defaultValue={props.initial.categoryId}
+            leading={<Folder className="size-4 text-muted" aria-hidden="true" />}
+            options={props.categories.map((category) => ({ value: category.id, label: category.name }))}
+            className={`${fieldClassName} h-11 px-3`}
+          />
         </div>
         <ImageField
           copy={props.copy}
@@ -246,10 +221,10 @@ export function ProductForm(props: ProductFormProps) {
       </div>
 
       <div className="mt-5 grid gap-4 border-t border-line pt-5 sm:grid-cols-2 xl:grid-cols-4">
-        <StatusOption name="isActive" label={props.copy.fields.available} hint={props.copy.productAvailableHint} defaultChecked={props.initial.isActive} />
-        <StatusOption name="outOfStock" label={props.copy.fields.outOfStock} hint={props.copy.productStockHint} defaultChecked={props.initial.outOfStock} />
-        <StatusOption name="isPublished" label={props.copy.fields.published} hint={props.copy.productPublishedHint} defaultChecked={props.initial.isPublished} />
-        <StatusOption name="isFeatured" label={props.copy.fields.featured} hint={props.copy.productFeaturedHint} defaultChecked={props.initial.isFeatured} />
+        <Checkbox name="isActive" label={props.copy.fields.available} description={props.copy.productAvailableHint} defaultChecked={props.initial.isActive} />
+        <Checkbox name="outOfStock" label={props.copy.fields.outOfStock} description={props.copy.productStockHint} defaultChecked={props.initial.outOfStock} />
+        <Checkbox name="isPublished" label={props.copy.fields.published} description={props.copy.productPublishedHint} defaultChecked={props.initial.isPublished} />
+        <Checkbox name="isFeatured" label={props.copy.fields.featured} description={props.copy.productFeaturedHint} defaultChecked={props.initial.isFeatured} />
       </div>
 
       <fieldset className="mt-5">
@@ -262,13 +237,7 @@ export function ProductForm(props: ProductFormProps) {
             const Icon = labelIcons[label];
             return (
               <label key={label} className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line px-3 py-2 text-sm text-foreground has-[:checked]:border-brand has-[:checked]:bg-orange-500/10 has-[:checked]:text-brand">
-                <input
-                  type="checkbox"
-                  name="label"
-                  value={label}
-                  defaultChecked={props.initial.labels.includes(label)}
-                  className="size-4 accent-brand"
-                />
+                <Checkbox name="label" value={label} defaultChecked={props.initial.labels.includes(label)} />
                 <Icon className="size-4" aria-hidden="true" />
                 {props.copy.labels[label]}
               </label>
@@ -520,37 +489,5 @@ function PriceEntry({
       </div>
       <p id={hintId} className="text-xs text-muted">{hint}</p>
     </div>
-  );
-}
-
-function StatusOption({
-  name,
-  label,
-  hint,
-  defaultChecked,
-}: {
-  name: string;
-  label: string;
-  hint: string;
-  defaultChecked: boolean;
-}) {
-  const hintId = `${name}-hint`;
-  return (
-    <label className="flex cursor-pointer items-start gap-3">
-      <span className="relative mt-0.5 grid size-5 shrink-0">
-        <input
-          type="checkbox"
-          name={name}
-          defaultChecked={defaultChecked}
-          aria-describedby={hintId}
-          className="peer col-start-1 row-start-1 size-5 appearance-none rounded-md border border-line bg-surface checked:border-brand checked:bg-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-        />
-        <Check className="pointer-events-none col-start-1 row-start-1 size-3.5 place-self-center text-white opacity-0 peer-checked:opacity-100" aria-hidden="true" />
-      </span>
-      <span>
-        <span className="block text-sm font-medium text-foreground">{label}</span>
-        <span id={hintId} className="mt-0.5 block text-xs text-muted">{hint}</span>
-      </span>
-    </label>
   );
 }

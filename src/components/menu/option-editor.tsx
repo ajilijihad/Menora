@@ -4,6 +4,7 @@ import { ChevronDown, Plus } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import type { MenuCopy } from "@/lib/i18n/menu-copy";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export type OptionDraft = {
   key: string;
@@ -102,12 +103,7 @@ export function OptionEditor({ copy, prefix, legend, hint, icon, initial }: Opti
             />
             <div className="flex items-center justify-between gap-3">
               <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={row.active}
-                  onChange={(event) => update(row.key, { active: event.target.checked })}
-                  className="size-4 accent-brand"
-                />
+                <Checkbox checked={row.active} onCheckedChange={(checked) => update(row.key, { active: checked })} />
                 {copy.fields.activeOption}
               </label>
               <button

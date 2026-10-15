@@ -4,6 +4,7 @@ import { Check, Download, FileText, Printer, Upload } from "lucide-react";
 import { useActionState, useEffect, useId, useState, type ChangeEvent } from "react";
 
 import type { QrCopy } from "@/lib/i18n/qr-copy";
+import { Select } from "@/components/ui/select";
 import { imageExtension, maxImageBytes } from "@/lib/businesses/media";
 import { idlePosterState, type PosterSaveMessage } from "@/lib/menus/poster-save";
 import { paintQrSvg, type QrMatrix } from "@/lib/menus/qr-style";
@@ -179,17 +180,12 @@ export function QrPoster({
               ) : null}
               <label className="text-sm">
                 <span className="mb-1.5 block text-xs text-muted">{copy.posterSize}</span>
-                <select
+                <Select
                   value={size}
-                  onChange={(event) => setSize(event.target.value as PosterSizeId)}
+                  onValueChange={(next) => setSize(next as PosterSizeId)}
+                  options={posterSizes.map((id) => ({ value: id, label: copy.posterSizeLabels[id] }))}
                   className="h-12 w-full rounded-xl border border-line bg-surface px-3 text-sm font-medium"
-                >
-                  {posterSizes.map((id) => (
-                    <option key={id} value={id}>
-                      {copy.posterSizeLabels[id]}
-                    </option>
-                  ))}
-                </select>
+                />
               </label>
               <button
                 type="submit"

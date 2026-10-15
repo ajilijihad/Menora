@@ -33,6 +33,8 @@ import { createPortal } from "react-dom";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { LandingPage } from "@/components/home/landing-page";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select } from "@/components/ui/select";
 import { imageExtension, maxImageBytes } from "@/lib/businesses/media";
 import { homepageImageUrl } from "@/lib/homepage/media";
 import {
@@ -298,9 +300,12 @@ function FeatureFields({ copy, language, content, update }: { copy: HomepageEdit
       {content.features.items.map((item, index) => (
         <Entry key={item.id} copy={copy} enabled={item.enabled} onEnabled={(checked) => update((draft) => { const current = draft.features.items[index]; if (current) current.enabled = checked; })} onRemove={() => update((draft) => { draft.features.items.splice(index, 1); })} onUp={() => move(update, (draft) => draft.features.items, index, -1)} onDown={() => move(update, (draft) => draft.features.items, index, 1)} upDisabled={index === 0} downDisabled={index === content.features.items.length - 1}>
           <Field label={copy.fields.icon}>
-            <select className={fieldClassName} value={item.icon} onChange={(event) => update((draft) => { const current = draft.features.items[index]; if (current) current.icon = event.target.value as FeatureIcon; })}>
-              {featureIcons.map((icon) => <option key={icon} value={icon}>{icon}</option>)}
-            </select>
+            <Select
+              value={item.icon}
+              onValueChange={(next) => update((draft) => { const current = draft.features.items[index]; if (current) current.icon = next as FeatureIcon; })}
+              options={featureIcons.map((icon) => ({ value: icon, label: icon }))}
+              className={fieldClassName}
+            />
           </Field>
           <Pair label={copy.fields.title} value={item.title} language={language} onChange={(value) => update((draft) => { const current = draft.features.items[index]; if (current) current.title[language] = value; })} />
           <Area label={copy.fields.body} value={item.body[language]} onChange={(value) => update((draft) => { const current = draft.features.items[index]; if (current) current.body[language] = value; })} />
@@ -465,7 +470,7 @@ function WebsiteFields({ copy, content, mediaBase, update, onNotice }: { copy: H
         <div className="grid gap-3 md:grid-cols-2">
           {content.contact.socials.map((item, index) => (
             <div key={item.network} className="flex min-w-0 flex-wrap items-center gap-2 sm:flex-nowrap">
-              <input type="checkbox" checked={item.enabled} aria-label={copy.networks[item.network]} onChange={(event) => update((draft) => { const current = draft.contact.socials[index]; if (current) current.enabled = event.target.checked; })} className="size-4 shrink-0 accent-brand" />
+              <Checkbox checked={item.enabled} ariaLabel={copy.networks[item.network]} onCheckedChange={(checked) => update((draft) => { const current = draft.contact.socials[index]; if (current) current.enabled = checked; })} />
               <SocialBrand network={item.network} />
               <span className="w-24 shrink-0 text-sm font-medium text-foreground">{copy.networks[item.network]}</span>
               <input dir="ltr" type="url" inputMode="url" placeholder="https://" autoComplete="url" className={`${fieldClassName} min-w-[10rem] flex-1`} value={item.url} onChange={(event) => update((draft) => { const current = draft.contact.socials[index]; if (current) current.url = event.target.value; })} />
@@ -752,20 +757,26 @@ function FooterLinkRow({ layout, index, link, copy, content, copied, update, onC
     });
   }
 
-  const show = <input type="checkbox" checked={link.enabled} aria-label={links.show} onChange={(event) => update((draft) => { const current = draft.footer.links[index]; if (current) current.enabled = event.target.checked; })} className="size-4 accent-brand" />;
+  const show = <Checkbox checked={link.enabled} ariaLabel={links.show} onCheckedChange={(checked) => update((draft) => { const current = draft.footer.links[index]; if (current) current.enabled = checked; })} />;
   const labelEn = <input dir="ltr" className={fieldClassName} maxLength={40} value={link.label.en} aria-label={links.labelEn} onChange={(event) => update((draft) => { const current = draft.footer.links[index]; if (current) current.label.en = event.target.value; })} />;
   const labelAr = <input dir="rtl" className={fieldClassName} maxLength={40} value={link.label.ar} aria-label={links.labelAr} onChange={(event) => update((draft) => { const current = draft.footer.links[index]; if (current) current.label.ar = event.target.value; })} />;
   const type = (
-    <select className={fieldClassName} aria-label={links.linkType} value={kind} onChange={(event) => setKind(event.target.value === "external" ? "external" : "section")}>
-      <option value="section">{links.pageSection}</option>
-      <option value="external">{links.externalUrl}</option>
-    </select>
+    <Select
+      ariaLabel={links.linkType}
+      value={kind}
+      onValueChange={(next) => setKind(next === "external" ? "external" : "section")}
+      options={[{ value: "section", label: links.pageSection }, { value: "external", label: links.externalUrl }]}
+      className={fieldClassName}
+    />
   );
   const destination = kind === "section" ? (
-    <select className={fieldClassName} aria-label={links.destination} value={target ?? ""} onChange={(event) => update((draft) => { const current = draft.footer.links[index]; if (!current) return; current.kind = "section"; current.href = hrefForSection(event.target.value as FooterTargetId); })}>
-      <option value="" disabled>{links.destination}</option>
-      {footerTargets.map((id) => <option key={id} value={id}>{targetLabel(copy, id)}</option>)}
-    </select>
+    <Select
+      ariaLabel={links.destination}
+      value={target ?? ""}
+      onValueChange={(next) => update((draft) => { const current = draft.footer.links[index]; if (!current) return; current.kind = "section"; current.href = hrefForSection(next as FooterTargetId); })}
+      options={[{ value: "", label: links.destination, disabled: true }, ...footerTargets.map((id) => ({ value: id, label: targetLabel(copy, id) }))]}
+      className={fieldClassName}
+    />
   ) : (
     <input dir="ltr" type="url" inputMode="url" placeholder="https://" className={fieldClassName} aria-label={links.destination} value={link.href} onChange={(event) => update((draft) => { const current = draft.footer.links[index]; if (!current) return; current.kind = "external"; current.href = event.target.value; })} />
   );
@@ -938,7 +949,7 @@ function move<T>(update: (recipe: (draft: HomepageContent) => void) => void, sel
 }
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) {
-  return <label className="inline-flex items-center gap-2 text-sm"><input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 accent-brand" />{label}</label>;
+  return <Checkbox label={label} checked={checked} onCheckedChange={onChange} />;
 }
 
 function Field({ label, required = false, dir, children }: { label: string; required?: boolean; dir?: "ltr" | "rtl"; children: ReactNode }) {

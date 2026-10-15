@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 
 import { currencies } from "@/lib/menus/money";
+import { Select } from "@/components/ui/select";
 import type { MenuCopy } from "@/lib/i18n/menu-copy";
 import type { Locale } from "@/lib/i18n/locales";
 import type { MenuMessageCode } from "@/lib/menus/schema";
@@ -34,17 +35,12 @@ export function CurrencyForm({ locale, copy, businessId, currency, canEdit }: Cu
       <input type="hidden" name="businessId" value={businessId} />
       <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
         {copy.fields.currency}
-        <select
+        <Select
           name="currency"
           defaultValue={currency}
+          options={currencies.map((item) => ({ value: item.code, label: `${item.code} · ${copy.currencies[item.code]}` }))}
           className="h-11 min-w-44 rounded-xl border border-line bg-surface px-3 text-sm text-foreground"
-        >
-          {currencies.map((item) => (
-            <option key={item.code} value={item.code}>
-              {item.code} · {copy.currencies[item.code]}
-            </option>
-          ))}
-        </select>
+        />
       </label>
       <button type="submit" className="mt-5 h-11 rounded-xl border border-line px-4 text-sm font-semibold" disabled={pending}>
         {pending ? copy.pending : copy.save}

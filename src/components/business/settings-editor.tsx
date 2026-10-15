@@ -18,6 +18,9 @@ import {
 import Link from "next/link";
 import { useActionState, useEffect, useRef, useState, type ReactNode } from "react";
 
+import { Select } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+
 import { Notice } from "@/components/auth/notice";
 import { descriptionLimit, socialNetworks, timeZones, weekDays, type BusinessField, type BusinessFormValues, type BusinessMessageCode, type OpeningHours, type SocialNetwork, type WeekDay } from "@/lib/businesses/schema";
 import { idleBusinessState } from "@/lib/businesses/form-state";
@@ -202,11 +205,13 @@ export function SettingsEditor({
                   <input id="name" name="name" required defaultValue={values.name} autoComplete="organization" className={fieldClassName} />
                 </Field>
                 <Field label={copy.fields.type} htmlFor="businessType" error={fieldError("businessType")}>
-                  <select id="businessType" name="businessType" defaultValue={values.businessType} className={fieldClassName}>
-                    {(["restaurant", "cafe", "bakery", "other"] as const).map((type) => (
-                      <option key={type} value={type}>{copy.types[type]}</option>
-                    ))}
-                  </select>
+                  <Select
+                    id="businessType"
+                    name="businessType"
+                    defaultValue={values.businessType}
+                    options={(["restaurant", "cafe", "bakery", "other"] as const).map((type) => ({ value: type, label: copy.types[type] }))}
+                    className={fieldClassName}
+                  />
                 </Field>
                 <Field label={copy.fields.description} htmlFor="description" error={fieldError("description")}>
                   <textarea
@@ -291,16 +296,26 @@ export function SettingsEditor({
       <Section id="localization" icon={<Languages className="size-4" aria-hidden="true" />} title={copy.localizationTitle} hint={copy.localizationHint}>
         <div className="grid gap-4 md:grid-cols-2">
           <Field label={copy.fields.language} htmlFor="defaultLanguage">
-            <select id="defaultLanguage" name="defaultLanguage" defaultValue={values.defaultLanguage} className={fieldClassName}>
-              <option value="en">{copy.languages.en}</option>
-              <option value="ar">{copy.languages.ar}</option>
-            </select>
+            <Select
+              id="defaultLanguage"
+              name="defaultLanguage"
+              defaultValue={values.defaultLanguage}
+              options={[{ value: "en", label: copy.languages.en }, { value: "ar", label: copy.languages.ar }]}
+              className={fieldClassName}
+            />
           </Field>
           <Field label={copy.fields.timeZone} htmlFor="timeZone" error={fieldError("timeZone")}>
-            <select id="timeZone" name="timeZone" defaultValue={values.timeZone} className={fieldClassName}>
-              {timeZones.some((zone) => zone === values.timeZone) ? null : <option value={values.timeZone}>{values.timeZone}</option>}
-              {timeZones.map((zone) => <option key={zone} value={zone}>{zone}</option>)}
-            </select>
+            <Select
+              id="timeZone"
+              name="timeZone"
+              searchable
+              defaultValue={values.timeZone}
+              options={[
+                ...(timeZones.some((zone) => zone === values.timeZone) ? [] : [{ value: values.timeZone, label: values.timeZone }]),
+                ...timeZones.map((zone) => ({ value: zone, label: zone })),
+              ]}
+              className={fieldClassName}
+            />
           </Field>
         </div>
       </Section>
@@ -390,12 +405,10 @@ function HourRow({
 }) {
   return (
     <div className={`grid items-center gap-3 rounded-xl border border-line px-3 py-2 sm:grid-cols-[auto_minmax(6rem,1fr)_5.5rem] lg:grid-cols-[auto_7rem_5.5rem_minmax(0,1fr)_minmax(0,1fr)] ${hours.closed ? "bg-surface-muted/70" : "bg-surface"}`}>
-      <input
-        type="checkbox"
+      <Checkbox
         checked={!hours.closed}
-        onChange={(event) => onChange({ ...hours, closed: !event.target.checked })}
-        aria-label={copy.days[day]}
-        className="size-4 accent-brand"
+        onCheckedChange={(checked) => onChange({ ...hours, closed: !checked })}
+        ariaLabel={copy.days[day]}
       />
       {hours.closed ? <input type="hidden" name={`${day}Closed`} value="on" /> : null}
       <span className="text-sm font-medium text-foreground">{copy.days[day]}</span>
@@ -495,20 +508,19 @@ function MediaField({
         </button>
         {previewUrl ? (
           <label className={`inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-line ${removed ? "bg-rose-500/10 text-rose-600" : "text-muted hover:text-foreground"}`}>
-            <input
-              type="checkbox"
+            <Checkbox
               name={removeName}
               checked={removed}
-              onChange={(event) => {
-                setRemoved(event.target.checked);
-                if (event.target.checked) {
+              visuallyHidden
+              onCheckedChange={(checked) => {
+                setRemoved(checked);
+                if (checked) {
                   setLocalPreview(null);
                   if (inputRef.current) {
                     inputRef.current.value = "";
                   }
                 }
               }}
-              className="sr-only"
             />
             <Trash2 className="size-4" aria-hidden="true" />
             <span className="sr-only">{removeLabel}</span>

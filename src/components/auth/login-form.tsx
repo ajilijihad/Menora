@@ -11,6 +11,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/locales";
 
 import { Notice } from "./notice";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type LoginFormProps = {
   locale: Locale;
@@ -92,13 +93,7 @@ export function LoginForm({ locale, copy, nextPath, notice }: LoginFormProps) {
       </div>
       <div className="flex items-center justify-between gap-3 text-sm">
         <label className="inline-flex items-center gap-2 text-[#415066] dark:text-muted">
-          <input
-            type="checkbox"
-            name="remember"
-            value="1"
-            defaultChecked={state.values?.remember !== "0"}
-            className="size-4 rounded border-[#c5d4e6] accent-[#FF5722]"
-          />
+          <Checkbox name="remember" value="1" defaultChecked={state.values?.remember !== "0"} />
           {copy.auth.rememberMe}
         </label>
         <Link href={`/${locale}/forgot-password`} className="font-medium text-[#FF5722] hover:text-[#f0441e]">

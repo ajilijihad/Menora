@@ -8,6 +8,8 @@ import { useActionState } from "react";
 import { adminHref, adminPageSize } from "@/lib/admin/list";
 import { adminWhen } from "@/components/admin/frame";
 import { Notice } from "@/components/auth/notice";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select } from "@/components/ui/select";
 import type { AdminCopy } from "@/lib/i18n/admin-copy";
 import type { Locale } from "@/lib/i18n/locales";
 import { adjustSubscriptionFormAction } from "@/modules/admin/actions";
@@ -120,12 +122,12 @@ export function SubscriptionsManager({
           </label>
           <label className="flex items-center gap-2 text-sm">
             <span className="font-medium text-muted">{copy.status}</span>
-            <select name="status" defaultValue={status} className={`${fieldClassName} w-40`}>
-              <option value="all">{copy.all}</option>
-              {statuses.map((value) => (
-                <option key={value} value={value}>{statusLabels[value]}</option>
-              ))}
-            </select>
+            <Select
+              name="status"
+              defaultValue={status}
+              options={[{ value: "all", label: copy.all }, ...statuses.map((value) => ({ value, label: statusLabels[value] }))]}
+              className={`${fieldClassName} w-40`}
+            />
           </label>
           <button type="submit" className={primaryClassName}>{copy.apply}</button>
         </form>
@@ -207,11 +209,14 @@ export function SubscriptionsManager({
               {term ? <input type="hidden" name="q" value={term} /> : null}
               {status !== "all" ? <input type="hidden" name="status" value={status} /> : null}
               <label className="sr-only" htmlFor="subscription-page-size">{text.perPage.replace("{count}", String(pageSize))}</label>
-              <select id="subscription-page-size" name="size" defaultValue={String(pageSize)} onChange={(event) => event.currentTarget.form?.requestSubmit()} className={`${fieldClassName} h-9 w-28`}>
-                {pageSizes.map((size) => (
-                  <option key={size} value={size}>{text.perPage.replace("{count}", String(size))}</option>
-                ))}
-              </select>
+              <Select
+                id="subscription-page-size"
+                name="size"
+                defaultValue={String(pageSize)}
+                submitOnChange
+                options={pageSizes.map((size) => ({ value: String(size), label: text.perPage.replace("{count}", String(size)) }))}
+                className={`${fieldClassName} h-9 w-28`}
+              />
             </form>
           </div>
         </div>
@@ -319,14 +324,17 @@ function AdjustFields({
           </label>
           <label className="flex flex-col gap-1.5 text-sm" htmlFor="subscription-operation">
             <span className="font-medium">{copy.operation}</span>
-            <select id="subscription-operation" name="operation" value={operation} onChange={(event) => setOperation(event.target.value as Operation)} className={fieldClassName}>
-              {operations.map((value) => (
-                <option key={value} value={value}>{copy[value]}</option>
-              ))}
-            </select>
+            <Select
+              id="subscription-operation"
+              name="operation"
+              value={operation}
+              onValueChange={(next) => setOperation(next as Operation)}
+              options={operations.map((value) => ({ value, label: copy[value] }))}
+              className={fieldClassName}
+            />
           </label>
           <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" name="confirm" value="yes" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} className="size-4 accent-brand" />
+            <Checkbox name="confirm" value="yes" checked={confirmed} onCheckedChange={setConfirmed} />
             {copy.confirm}
           </label>
           <div className="flex flex-wrap gap-2">

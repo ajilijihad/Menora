@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { ThemePreview } from "@/components/menu/theme-preview";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select } from "@/components/ui/select";
 import { MenuView } from "@/components/public-menu/menu-view";
 import type { AppearanceCopy } from "@/lib/i18n/appearance-copy";
 import type { MenuCopy } from "@/lib/i18n/menu-copy";
@@ -250,13 +252,12 @@ export function AppearanceEditor({
             />
           </label>
           <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
+            <Checkbox
               name="removeLogo"
               checked={removeLogo}
-              onChange={(event) => {
-                setRemoveLogo(event.target.checked);
-                if (event.target.checked) {
+              onCheckedChange={(checked) => {
+                setRemoveLogo(checked);
+                if (checked) {
                   setLogoFile(null);
                   setLogoPreview((current) => replaceObjectUrl(current, null));
                   if (logoInput.current) {
@@ -284,13 +285,12 @@ export function AppearanceEditor({
             />
           </label>
           <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
+            <Checkbox
               name="removeCover"
               checked={removeCover}
-              onChange={(event) => {
-                setRemoveCover(event.target.checked);
-                if (event.target.checked) {
+              onCheckedChange={(checked) => {
+                setRemoveCover(checked);
+                if (checked) {
                   setCoverFile(null);
                   setCoverPreview((current) => replaceObjectUrl(current, null));
                   if (coverInput.current) {
@@ -444,18 +444,13 @@ function Choice<T extends string>({
   return (
     <label className="flex flex-col gap-1 text-sm">
       <span className="font-medium">{label}</span>
-      <select
+      <Select
         name={name}
         value={value}
-        onChange={(event) => onChange(event.target.value as T)}
-        className="h-10 rounded-lg border border-zinc-300 bg-white px-3 dark:border-zinc-700 dark:bg-zinc-950"
-      >
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {labels[option]}
-          </option>
-        ))}
-      </select>
+        onValueChange={(next) => onChange(next as T)}
+        options={options.map((option) => ({ value: option, label: labels[option] }))}
+        className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+      />
     </label>
   );
 }

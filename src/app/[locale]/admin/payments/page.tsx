@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { AdminFilters, AdminNotice, AdminPager, AdminSection, adminFieldClassName, adminWhen } from "@/components/admin/frame";
+import { Checkbox } from "@/components/ui/checkbox";
 import { LoadingState } from "@/components/states/loading-state";
 import { StatusPanel, statusActionClassName } from "@/components/states/status-panel";
 import { formatMoney } from "@/lib/i18n/format";
@@ -101,7 +102,7 @@ async function Payments({ locale, searchParams }: { locale: Locale; searchParams
           <input name="reason" required minLength={8} maxLength={500} className={adminFieldClassName} />
         </label>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="confirm" value="yes" required />
+          <Checkbox name="confirm" value="yes" required />
           {copy.confirm}
         </label>
         <input type="hidden" name="locale" value={locale} />

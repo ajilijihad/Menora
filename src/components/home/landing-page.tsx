@@ -340,7 +340,7 @@ function Pricing({ locale, content, plans, chrome, accountHref }: { locale: Loca
       <h2 className="mt-2 text-3xl font-semibold tracking-tight">{localizedText(content.pricing.title, locale)}</h2>
       <p className="mt-2 max-w-2xl text-sm text-muted">{localizedText(content.pricing.description, locale)}</p>
       {cards.length === 0 ? <p className="mt-8 text-sm text-muted">{chrome.noPlans}</p> : (
-        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {cards.map(({ card, plan }) => {
             const badge = localizedText(card.badge, locale);
             const price = formatMoney(plan.amountCents, plan.currency, locale);

@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { AdminFilters, AdminNotice, AdminPager, AdminSection, adminFieldClassName } from "@/components/admin/frame";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select } from "@/components/ui/select";
 import { LoadingState } from "@/components/states/loading-state";
 import { StatusPanel, statusActionClassName } from "@/components/states/status-panel";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -95,17 +97,18 @@ async function Businesses({ locale, searchParams }: { locale: Locale; searchPara
         </label>
         <label className="flex flex-col gap-2 text-sm font-medium">
           {copy.operation}
-          <select name="mode" className={adminFieldClassName}>
-            <option value="suspend">{copy.suspend}</option>
-            <option value="reactivate">{copy.reactivate}</option>
-          </select>
+          <Select
+            name="mode"
+            options={[{ value: "suspend", label: copy.suspend }, { value: "reactivate", label: copy.reactivate }]}
+            className={`${adminFieldClassName} w-full`}
+          />
         </label>
         <label className="flex flex-col gap-2 text-sm font-medium sm:col-span-2">
           {copy.reason}
           <input name="reason" required minLength={8} maxLength={500} className={adminFieldClassName} />
         </label>
         <label className="flex items-center gap-2 text-sm sm:col-span-2">
-          <input type="checkbox" name="confirm" value="yes" required />
+          <Checkbox name="confirm" value="yes" required />
           {copy.confirm}
         </label>
         <input type="hidden" name="locale" value={locale} />

@@ -1,10 +1,11 @@
 "use client";
 
-import { ArrowRight, Check, Loader2, Tag } from "lucide-react";
+import { ArrowRight, Loader2, Tag } from "lucide-react";
 import { useState } from "react";
 import { useActionState } from "react";
 
 import { Notice } from "@/components/auth/notice";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { MenuCopy } from "@/lib/i18n/menu-copy";
 import type { Locale } from "@/lib/i18n/locales";
 import { categoryDescriptionMax, categoryNameMax, type MenuMessageCode } from "@/lib/menus/schema";
@@ -85,8 +86,8 @@ export function CategoryForm({ locale, copy, businessId, categoryId, initial }: 
       </div>
 
       <div className="mt-5 flex flex-col gap-4 border-t border-line pt-5 sm:flex-row sm:gap-8">
-        <StatusOption name="isActive" label={copy.fields.available} hint={copy.availableHint} defaultChecked={initial.isActive} />
-        <StatusOption name="isPublished" label={copy.fields.published} hint={copy.publishedHint} defaultChecked={initial.isPublished} />
+        <Checkbox name="isActive" label={copy.fields.available} description={copy.availableHint} defaultChecked={initial.isActive} />
+        <Checkbox name="isPublished" label={copy.fields.published} description={copy.publishedHint} defaultChecked={initial.isPublished} />
       </div>
 
       <button
@@ -189,39 +190,5 @@ function DescriptionField({
         </span>
       </div>
     </div>
-  );
-}
-
-function StatusOption({
-  name,
-  label,
-  hint,
-  defaultChecked,
-}: {
-  name: string;
-  label: string;
-  hint: string;
-  defaultChecked: boolean;
-}) {
-  const hintId = `${name}-hint`;
-  return (
-    <label className="flex cursor-pointer items-start gap-3">
-      <span className="relative mt-0.5 grid size-5 shrink-0">
-        <input
-          type="checkbox"
-          name={name}
-          defaultChecked={defaultChecked}
-          aria-describedby={hintId}
-          className="peer col-start-1 row-start-1 size-5 appearance-none rounded-md border border-line bg-surface checked:border-brand checked:bg-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-        />
-        <Check className="pointer-events-none col-start-1 row-start-1 size-3.5 place-self-center text-white opacity-0 peer-checked:opacity-100" aria-hidden="true" />
-      </span>
-      <span>
-        <span className="block text-sm font-medium text-foreground">{label}</span>
-        <span id={hintId} className="mt-0.5 block text-xs text-muted">
-          {hint}
-        </span>
-      </span>
-    </label>
   );
 }

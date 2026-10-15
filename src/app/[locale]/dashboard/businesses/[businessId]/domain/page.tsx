@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 
 import { Notice } from "@/components/auth/notice";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CopyValue, PendingSubmit } from "@/components/dashboard/domain-controls";
 import { LoadingState } from "@/components/states/loading-state";
 import { StatusPanel } from "@/components/states/status-panel";
@@ -533,7 +534,7 @@ function RemoveForm({
       <input type="hidden" name="businessId" value={businessId} />
       <input type="hidden" name="domainId" value={domainId} />
       <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" name="confirm" value="yes" required className="size-4 accent-[var(--brand)]" />
+        <Checkbox name="confirm" value="yes" required />
         {copy.confirmRemove}
       </label>
       <PendingSubmit
