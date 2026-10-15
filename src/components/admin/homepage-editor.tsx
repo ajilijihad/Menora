@@ -63,8 +63,10 @@ import { removeHomepageImageAction, saveHomepageAction, uploadHomepageImageActio
 
 type EditorSection = HomepageSectionId | "website" | "footer" | "seo";
 
-const fieldClassName = "h-11 w-full rounded-xl border border-line bg-surface px-3 text-sm text-foreground outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
-const iconFieldClassName = "h-11 w-full rounded-xl border border-line bg-surface ps-10 pe-3 text-sm text-foreground outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
+const fieldClassName = "h-11 w-full rounded-xl border border-line bg-surface px-3.5 text-sm text-foreground outline-none transition focus-visible:border-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
+const iconFieldClassName = "h-11 w-full rounded-xl border border-line bg-surface ps-10 pe-3.5 text-sm text-foreground outline-none transition focus-visible:border-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
+const panelClassName = "grid gap-4 rounded-2xl border border-line bg-surface p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-5";
+const quietButtonClassName = "inline-flex h-10 items-center justify-center rounded-xl border border-line bg-surface px-4 text-sm font-medium text-foreground transition hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
 
 const sectionIcon: Record<EditorSection, LucideIcon> = {
   website: Globe,
@@ -159,18 +161,20 @@ export function HomepageEditor({
     { id: "seo", label: copy.sections.seo },
   ];
 
+  const languageSections = section !== "website" && section !== "footer";
+
   return (
-    <div className="mx-auto grid w-full max-w-7xl gap-5 px-4 py-6 lg:grid-cols-[16.5rem_minmax(0,1fr)] lg:px-6">
+    <div className="mx-auto grid w-full max-w-[90rem] gap-6 px-4 py-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:px-6 lg:py-8">
       <aside className="lg:sticky lg:top-4 lg:self-start">
-        <div className="flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-2 lg:flex-col">
+        <div className="flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-2 shadow-[0_1px_2px_rgba(15,23,42,0.04)] lg:flex-col">
           {sections.map((item) => {
             const Icon = sectionIcon[item.id];
             const position = homepageSectionIds.includes(item.id as HomepageSectionId) ? content.order.indexOf(item.id as HomepageSectionId) : -1;
             const selected = section === item.id;
             return (
-              <div key={item.id} className={`relative flex shrink-0 items-center gap-1 rounded-xl px-2 py-1.5 ${selected ? "bg-brand/10 text-brand" : "text-foreground hover:bg-surface-muted"}`}>
+              <div key={item.id} className={`relative flex shrink-0 items-center gap-1 rounded-xl px-2 py-1 ${selected ? "bg-brand/10 text-brand" : "text-foreground hover:bg-surface-muted"}`}>
                 {selected ? <span className="absolute inset-y-2 start-0 w-1 rounded-full bg-brand" aria-hidden="true" /> : null}
-                <button type="button" onClick={() => setSection(item.id)} className="flex min-w-0 flex-1 items-center gap-2 px-1 py-1 text-start text-sm font-medium" aria-current={selected ? "true" : undefined}>
+                <button type="button" onClick={() => setSection(item.id)} className="flex min-w-0 flex-1 items-center gap-2.5 px-1.5 py-2 text-start text-sm font-medium" aria-current={selected ? "true" : undefined}>
                   <Icon className="size-4 shrink-0" aria-hidden="true" />
                   <span className="truncate">{item.label}</span>
                 </button>
@@ -186,38 +190,42 @@ export function HomepageEditor({
         </div>
       </aside>
       <div className="min-w-0">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">{copy.title}</h1>
-            <p className="mt-1 text-sm text-muted">{copy.description}</p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{copy.title}</h1>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-muted">{copy.description}</p>
             {dirty ? <p className="mt-2 text-sm font-medium text-brand">{copy.unsaved}</p> : null}
           </div>
-          <div className="flex flex-wrap gap-2 sm:justify-end">
-            <Link href={`/${locale}`} target="_blank" className="inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm font-medium text-foreground hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+          <div className="flex flex-wrap gap-2 sm:shrink-0 sm:justify-end">
+            <Link href={`/${locale}`} target="_blank" className={`${quietButtonClassName} h-11 gap-2`}>
               <ExternalLink className="size-4" aria-hidden="true" />
               {copy.viewLive}
             </Link>
-            <button type="button" disabled={pending || !dirty} onClick={save} className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-60">
+            <button type="button" disabled={pending || !dirty} onClick={save} className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-white transition hover:bg-brand-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-60">
               <Save className="size-4" aria-hidden="true" />
               {pending ? copy.saving : copy.save}
             </button>
           </div>
         </div>
-        {notice ? <p className={`mt-4 rounded-xl px-3 py-2 text-sm ${tone === "success" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-rose-500/10 text-rose-700 dark:text-rose-300"}`} role="status">{notice}</p> : null}
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" onClick={() => setMode("edit")} className={`h-9 rounded-lg px-3 text-sm ${mode === "edit" ? "bg-brand/10 font-medium text-brand" : "text-muted"}`}>{copy.edit}</button>
-          <button type="button" onClick={() => setMode("preview")} className={`h-9 rounded-lg px-3 text-sm ${mode === "preview" ? "bg-brand/10 font-medium text-brand" : "text-muted"}`}>{copy.preview}</button>
+        {notice ? <p className={`mt-4 rounded-xl px-3.5 py-2.5 text-sm ${tone === "success" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-rose-500/10 text-rose-700 dark:text-rose-300"}`} role="status">{notice}</p> : null}
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="inline-flex w-fit rounded-xl border border-line bg-surface p-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <button type="button" onClick={() => setMode("edit")} className={`h-9 rounded-lg px-4 text-sm ${mode === "edit" ? "bg-brand font-semibold text-white" : "text-muted hover:text-foreground"}`}>{copy.edit}</button>
+            <button type="button" onClick={() => setMode("preview")} className={`h-9 rounded-lg px-4 text-sm ${mode === "preview" ? "bg-brand font-semibold text-white" : "text-muted hover:text-foreground"}`}>{copy.preview}</button>
+          </div>
           {mode === "preview" ? (
-            <>
-              <button type="button" onClick={() => setPreviewLocale("en")} className="h-9 rounded-lg border border-line bg-surface px-3 text-sm">{copy.english}</button>
-              <button type="button" onClick={() => setPreviewLocale("ar")} className="h-9 rounded-lg border border-line bg-surface px-3 text-sm">{copy.arabic}</button>
-              <button type="button" onClick={() => setViewport("desktop")} className="h-9 rounded-lg border border-line bg-surface px-3 text-sm">{copy.desktop}</button>
-              <button type="button" onClick={() => setViewport("mobile")} className="h-9 rounded-lg border border-line bg-surface px-3 text-sm">{copy.mobile}</button>
-            </>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={() => setPreviewLocale("en")} className={chipClass(previewLocale === "en")}>{copy.english}</button>
+              <button type="button" onClick={() => setPreviewLocale("ar")} className={chipClass(previewLocale === "ar")}>{copy.arabic}</button>
+              <button type="button" onClick={() => setViewport("desktop")} className={chipClass(viewport === "desktop")}>{copy.desktop}</button>
+              <button type="button" onClick={() => setViewport("mobile")} className={chipClass(viewport === "mobile")}>{copy.mobile}</button>
+            </div>
+          ) : languageSections ? (
+            <LocaleSwitch copy={copy} language={language} onChange={setLanguage} />
           ) : null}
         </div>
         {mode === "preview" ? (
-          <div className={`mt-4 overflow-hidden rounded-2xl border border-line bg-background ${viewport === "mobile" ? "mx-auto max-w-sm" : ""}`} dir={previewLocale === "ar" ? "rtl" : "ltr"}>
+          <div className={`mt-5 overflow-hidden rounded-2xl border border-line bg-background shadow-[0_1px_2px_rgba(15,23,42,0.04)] ${viewport === "mobile" ? "mx-auto max-w-sm" : ""}`} dir={previewLocale === "ar" ? "rtl" : "ltr"}>
             <LandingPage locale={previewLocale} brand={brand} dashboardLabel={dashboardLabel} logoutLabel="" content={content} plans={plans} chrome={chrome[previewLocale]} qrSvg={qrSvg} signedIn={false} mediaBase={mediaBase} />
           </div>
         ) : section === "website" ? (
@@ -229,8 +237,7 @@ export function HomepageEditor({
             <FooterFields copy={copy} content={content} update={update} />
           </div>
         ) : (
-          <div className="mt-5 rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)] sm:p-5">
-            <LocaleSwitch copy={copy} language={language} onChange={setLanguage} />
+          <div className="mt-5">
             {section === "hero" ? <HeroFields copy={copy} language={language} content={content} mediaBase={mediaBase} update={update} onNotice={fail} /> : null}
             {section === "features" ? <FeatureFields copy={copy} language={language} content={content} update={update} /> : null}
             {section === "how" ? <StepFields copy={copy} language={language} content={content} update={update} /> : null}
@@ -262,11 +269,17 @@ export function HomepageEditor({
   }
 }
 
+function chipClass(selected: boolean) {
+  return selected
+    ? "inline-flex h-10 items-center rounded-xl bg-brand px-4 text-sm font-semibold text-white"
+    : quietButtonClassName;
+}
+
 function LocaleSwitch({ copy, language, onChange }: { copy: HomepageEditorCopy; language: Locale; onChange: (locale: Locale) => void }) {
   return (
-    <div className="mb-4 flex gap-2" role="tablist">
+    <div className="flex flex-wrap gap-2" role="tablist">
       {(["en", "ar"] as const).map((item) => (
-        <button key={item} type="button" role="tab" aria-selected={language === item} onClick={() => onChange(item)} className={`h-9 rounded-lg border px-3 text-sm ${language === item ? "border-brand bg-brand/10 text-brand" : "border-line text-muted"}`}>
+        <button key={item} type="button" role="tab" aria-selected={language === item} onClick={() => onChange(item)} className={chipClass(language === item)}>
           {item === "en" ? copy.english : copy.arabic}
         </button>
       ))}
@@ -276,7 +289,7 @@ function LocaleSwitch({ copy, language, onChange }: { copy: HomepageEditorCopy; 
 
 function HeroFields({ copy, language, content, mediaBase, update, onNotice }: { copy: HomepageEditorCopy; language: Locale; content: HomepageContent; mediaBase: string | null; update: (recipe: (draft: HomepageContent) => void) => void; onNotice: (code: HomepageActionCode) => void }) {
   return (
-    <div className="grid gap-4">
+    <div className={panelClassName}>
       <Toggle label={copy.enabled} checked={content.hero.enabled} onChange={(checked) => update((draft) => { draft.hero.enabled = checked; })} />
       <Pair label={copy.fields.badge} value={content.hero.badge} language={language} onChange={(value) => update((draft) => { draft.hero.badge[language] = value; })} />
       <Pair label={copy.fields.title} value={content.hero.title} language={language} onChange={(value) => update((draft) => { draft.hero.title[language] = value; })} />
@@ -296,7 +309,9 @@ function HeroFields({ copy, language, content, mediaBase, update, onNotice }: { 
 function FeatureFields({ copy, language, content, update }: { copy: HomepageEditorCopy; language: Locale; content: HomepageContent; update: (recipe: (draft: HomepageContent) => void) => void }) {
   return (
     <ListSection copy={copy} enabled={content.features.enabled} onEnabled={(checked) => update((draft) => { draft.features.enabled = checked; })} onAdd={() => update((draft) => { draft.features.items.push({ id: crypto.randomUUID(), enabled: true, icon: "zap", title: blankLocalized(), body: blankLocalized() }); })}>
-      <Pair label={copy.fields.title} value={content.features.title} language={language} onChange={(value) => update((draft) => { draft.features.title[language] = value; })} />
+      <div className={panelClassName}>
+        <Pair label={copy.fields.title} value={content.features.title} language={language} onChange={(value) => update((draft) => { draft.features.title[language] = value; })} />
+      </div>
       {content.features.items.map((item, index) => (
         <Entry key={item.id} copy={copy} enabled={item.enabled} onEnabled={(checked) => update((draft) => { const current = draft.features.items[index]; if (current) current.enabled = checked; })} onRemove={() => update((draft) => { draft.features.items.splice(index, 1); })} onUp={() => move(update, (draft) => draft.features.items, index, -1)} onDown={() => move(update, (draft) => draft.features.items, index, 1)} upDisabled={index === 0} downDisabled={index === content.features.items.length - 1}>
           <Field label={copy.fields.icon}>
@@ -318,8 +333,10 @@ function FeatureFields({ copy, language, content, update }: { copy: HomepageEdit
 function StepFields({ copy, language, content, update }: { copy: HomepageEditorCopy; language: Locale; content: HomepageContent; update: (recipe: (draft: HomepageContent) => void) => void }) {
   return (
     <ListSection copy={copy} enabled={content.how.enabled} onEnabled={(checked) => update((draft) => { draft.how.enabled = checked; })} onAdd={() => update((draft) => { draft.how.items.push({ id: crypto.randomUUID(), enabled: true, title: blankLocalized(), body: blankLocalized() }); })}>
-      <Pair label={copy.fields.eyebrow} value={content.how.eyebrow} language={language} onChange={(value) => update((draft) => { draft.how.eyebrow[language] = value; })} />
-      <Pair label={copy.fields.title} value={content.how.title} language={language} onChange={(value) => update((draft) => { draft.how.title[language] = value; })} />
+      <div className={panelClassName}>
+        <Pair label={copy.fields.eyebrow} value={content.how.eyebrow} language={language} onChange={(value) => update((draft) => { draft.how.eyebrow[language] = value; })} />
+        <Pair label={copy.fields.title} value={content.how.title} language={language} onChange={(value) => update((draft) => { draft.how.title[language] = value; })} />
+      </div>
       {content.how.items.map((item, index) => (
         <Entry key={item.id} copy={copy} enabled={item.enabled} onEnabled={(checked) => update((draft) => { const current = draft.how.items[index]; if (current) current.enabled = checked; })} onRemove={() => update((draft) => { draft.how.items.splice(index, 1); })} onUp={() => move(update, (draft) => draft.how.items, index, -1)} onDown={() => move(update, (draft) => draft.how.items, index, 1)} upDisabled={index === 0} downDisabled={index === content.how.items.length - 1}>
           <Pair label={copy.fields.title} value={item.title} language={language} onChange={(value) => update((draft) => { const current = draft.how.items[index]; if (current) current.title[language] = value; })} />
@@ -333,9 +350,11 @@ function StepFields({ copy, language, content, update }: { copy: HomepageEditorC
 function ExampleFields({ copy, language, content, mediaBase, update, onNotice }: { copy: HomepageEditorCopy; language: Locale; content: HomepageContent; mediaBase: string | null; update: (recipe: (draft: HomepageContent) => void) => void; onNotice: (code: HomepageActionCode) => void }) {
   return (
     <ListSection copy={copy} enabled={content.examples.enabled} onEnabled={(checked) => update((draft) => { draft.examples.enabled = checked; })} onAdd={() => update((draft) => { draft.examples.items.push({ id: crypto.randomUUID(), enabled: true, imagePath: "", imageAlt: blankLocalized(), title: blankLocalized(), body: blankLocalized() }); })}>
-      <Pair label={copy.fields.eyebrow} value={content.examples.eyebrow} language={language} onChange={(value) => update((draft) => { draft.examples.eyebrow[language] = value; })} />
-      <Pair label={copy.fields.title} value={content.examples.title} language={language} onChange={(value) => update((draft) => { draft.examples.title[language] = value; })} />
-      <Area label={copy.fields.description} value={content.examples.description[language]} onChange={(value) => update((draft) => { draft.examples.description[language] = value; })} />
+      <div className={panelClassName}>
+        <Pair label={copy.fields.eyebrow} value={content.examples.eyebrow} language={language} onChange={(value) => update((draft) => { draft.examples.eyebrow[language] = value; })} />
+        <Pair label={copy.fields.title} value={content.examples.title} language={language} onChange={(value) => update((draft) => { draft.examples.title[language] = value; })} />
+        <Area label={copy.fields.description} value={content.examples.description[language]} onChange={(value) => update((draft) => { draft.examples.description[language] = value; })} />
+      </div>
       {content.examples.items.map((item, index) => (
         <Entry key={item.id} copy={copy} enabled={item.enabled} onEnabled={(checked) => update((draft) => { const current = draft.examples.items[index]; if (current) current.enabled = checked; })} onRemove={() => { if (item.imagePath) void removeHomepageImageAction(item.imagePath); update((draft) => { draft.examples.items.splice(index, 1); }); }} onUp={() => move(update, (draft) => draft.examples.items, index, -1)} onDown={() => move(update, (draft) => draft.examples.items, index, 1)} upDisabled={index === 0} downDisabled={index === content.examples.items.length - 1}>
           <ImageField copy={copy} label={copy.fields.theme} path={item.imagePath} mediaBase={mediaBase} onNotice={onNotice} onPath={(path) => update((draft) => { const current = draft.examples.items[index]; if (current) current.imagePath = path; })} />
@@ -351,27 +370,64 @@ function ExampleFields({ copy, language, content, mediaBase, update, onNotice }:
 function PricingFields({ copy, language, content, plans, update }: { copy: HomepageEditorCopy; language: Locale; content: HomepageContent; plans: PublicPlan[]; update: (recipe: (draft: HomepageContent) => void) => void }) {
   return (
     <div className="grid gap-4">
-      <p className="text-sm text-muted">{copy.priceNote}</p>
-      <Toggle label={copy.enabled} checked={content.pricing.enabled} onChange={(checked) => update((draft) => { draft.pricing.enabled = checked; })} />
-      <Pair label={copy.fields.eyebrow} value={content.pricing.eyebrow} language={language} onChange={(value) => update((draft) => { draft.pricing.eyebrow[language] = value; })} />
-      <Pair label={copy.fields.title} value={content.pricing.title} language={language} onChange={(value) => update((draft) => { draft.pricing.title[language] = value; })} />
-      <Area label={copy.fields.description} value={content.pricing.description[language]} onChange={(value) => update((draft) => { draft.pricing.description[language] = value; })} />
+      <p className="flex items-start gap-2.5 rounded-xl border border-brand/15 bg-brand/5 px-4 py-3 text-sm leading-6 text-foreground">
+        <Info className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden="true" />
+        <span>{copy.priceNote}</span>
+      </p>
+      <section className="relative overflow-hidden rounded-2xl border border-line bg-surface p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-5">
+        <span className="absolute inset-y-0 start-0 w-1 bg-brand" aria-hidden="true" />
+        <div className="flex items-center gap-3">
+          <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
+            <BadgeDollarSign className="size-4" aria-hidden="true" />
+          </span>
+          <h2 className="text-base font-semibold text-foreground">{copy.sections.pricing}</h2>
+        </div>
+        <div className="mt-4 border-t border-line pt-4">
+          <Toggle label={copy.enabled} checked={content.pricing.enabled} onChange={(checked) => update((draft) => { draft.pricing.enabled = checked; })} />
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <Pair label={copy.fields.eyebrow} value={content.pricing.eyebrow} language={language} onChange={(value) => update((draft) => { draft.pricing.eyebrow[language] = value; })} />
+          <Pair label={copy.fields.title} value={content.pricing.title} language={language} onChange={(value) => update((draft) => { draft.pricing.title[language] = value; })} />
+        </div>
+        <div className="mt-4">
+          <Area label={copy.fields.description} value={content.pricing.description[language]} onChange={(value) => update((draft) => { draft.pricing.description[language] = value; })} />
+        </div>
+      </section>
       {content.pricing.cards.map((card, index) => {
         const plan = plans.find((item) => item.code === card.code);
+        const price = plan ? formatMoney(plan.amountCents, plan.currency, language) || plan.currency : "";
         return (
-          <Entry key={card.code} copy={copy} enabled={card.visible} enabledLabel={copy.enabled} onEnabled={(checked) => update((draft) => { const current = draft.pricing.cards[index]; if (current) current.visible = checked; })} onRemove={() => undefined} onUp={() => move(update, (draft) => draft.pricing.cards, index, -1)} onDown={() => move(update, (draft) => draft.pricing.cards, index, 1)} upDisabled={index === 0} downDisabled={index === content.pricing.cards.length - 1} hideRemove>
-            <p className="text-sm font-semibold">{plan?.name ?? card.code}{plan ? ` · ${formatMoney(plan.amountCents, plan.currency, language) || plan.currency}` : ""}</p>
-            <Pair label={copy.fields.badgePlan} value={card.badge} language={language} onChange={(value) => update((draft) => { const current = draft.pricing.cards[index]; if (current) current.badge[language] = value; })} />
-            <Area label={copy.fields.blurb} value={card.blurb[language]} onChange={(value) => update((draft) => { const current = draft.pricing.cards[index]; if (current) current.blurb[language] = value; })} />
-            <Pair label={copy.fields.cta} value={card.cta} language={language} onChange={(value) => update((draft) => { const current = draft.pricing.cards[index]; if (current) current.cta[language] = value; })} />
-            {card.features.map((feature, featureIndex) => (
-              <div key={featureIndex} className="flex items-end gap-2">
-                <div className="min-w-0 flex-1"><Pair label={copy.fields.feature} value={feature} language={language} onChange={(value) => update((draft) => { const current = draft.pricing.cards[index]?.features[featureIndex]; if (current) current[language] = value; })} /></div>
-                <IconButton label={copy.remove} onClick={() => update((draft) => { draft.pricing.cards[index]?.features.splice(featureIndex, 1); })}><Trash2 className="size-4" /></IconButton>
+          <section key={card.code} className="rounded-2xl border border-line bg-surface p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
+              <div className="flex min-w-0 flex-wrap items-center gap-3">
+                <span className="inline-flex h-7 min-w-9 items-center justify-center rounded-lg bg-brand/10 px-2 text-xs font-semibold tabular-nums text-brand">{String(index + 1).padStart(2, "0")}</span>
+                <Toggle label={copy.enabled} checked={card.visible} onChange={(checked) => update((draft) => { const current = draft.pricing.cards[index]; if (current) current.visible = checked; })} />
+                <p className="min-w-0 text-sm font-semibold text-foreground">{plan?.name ?? card.code}{price ? ` – ${price}` : ""}</p>
               </div>
-            ))}
-            <button type="button" className="text-sm font-medium text-brand" onClick={() => update((draft) => { draft.pricing.cards[index]?.features.push(blankLocalized()); })}>{copy.add}</button>
-          </Entry>
+              <span className="flex gap-1.5">
+                <IconButton label={copy.moveUp} disabled={index === 0} onClick={() => move(update, (draft) => draft.pricing.cards, index, -1)}><ArrowUp className="size-4" /></IconButton>
+                <IconButton label={copy.moveDown} disabled={index === content.pricing.cards.length - 1} onClick={() => move(update, (draft) => draft.pricing.cards, index, 1)}><ArrowDown className="size-4" /></IconButton>
+              </span>
+            </div>
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
+              <div className="grid content-start gap-4">
+                <Pair label={copy.fields.badgePlan} value={card.badge} language={language} onChange={(value) => update((draft) => { const current = draft.pricing.cards[index]; if (current) current.badge[language] = value; })} />
+                <Pair label={copy.fields.cta} value={card.cta} language={language} onChange={(value) => update((draft) => { const current = draft.pricing.cards[index]; if (current) current.cta[language] = value; })} />
+              </div>
+              <Area rows={5} label={copy.fields.blurb} value={card.blurb[language]} onChange={(value) => update((draft) => { const current = draft.pricing.cards[index]; if (current) current.blurb[language] = value; })} />
+            </div>
+            {card.features.length > 0 ? (
+              <div className="mt-4 grid gap-3">
+                {card.features.map((feature, featureIndex) => (
+                  <div key={featureIndex} className="flex items-end gap-2">
+                    <div className="min-w-0 flex-1"><Pair label={copy.fields.feature} value={feature} language={language} onChange={(value) => update((draft) => { const current = draft.pricing.cards[index]?.features[featureIndex]; if (current) current[language] = value; })} /></div>
+                    <IconButton tone="danger" label={copy.remove} onClick={() => update((draft) => { draft.pricing.cards[index]?.features.splice(featureIndex, 1); })}><Trash2 className="size-4" /></IconButton>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            <button type="button" className="mt-4 flex h-11 w-full items-center justify-center rounded-xl bg-brand/10 text-sm font-semibold text-brand transition hover:bg-brand/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand" onClick={() => update((draft) => { draft.pricing.cards[index]?.features.push(blankLocalized()); })}>{copy.add}</button>
+          </section>
         );
       })}
     </div>
@@ -381,8 +437,10 @@ function PricingFields({ copy, language, content, plans, update }: { copy: Homep
 function TestimonialFields({ copy, language, content, update }: { copy: HomepageEditorCopy; language: Locale; content: HomepageContent; update: (recipe: (draft: HomepageContent) => void) => void }) {
   return (
     <ListSection copy={copy} enabled={content.testimonials.enabled} onEnabled={(checked) => update((draft) => { draft.testimonials.enabled = checked; })} onAdd={() => update((draft) => { draft.testimonials.items.push({ id: crypto.randomUUID(), enabled: true, name: blankLocalized(), role: blankLocalized(), quote: blankLocalized() }); })}>
-      <p className="text-sm text-muted">{copy.testimonialsEmpty}</p>
+      <div className={panelClassName}>
+      <p className="text-sm leading-6 text-muted">{copy.testimonialsEmpty}</p>
       <Pair label={copy.fields.title} value={content.testimonials.title} language={language} onChange={(value) => update((draft) => { draft.testimonials.title[language] = value; })} />
+      </div>
       {content.testimonials.items.length === 0 ? <p className="text-sm text-muted">{copy.empty}</p> : null}
       {content.testimonials.items.map((item, index) => (
         <Entry key={item.id} copy={copy} enabled={item.enabled} onEnabled={(checked) => update((draft) => { const current = draft.testimonials.items[index]; if (current) current.enabled = checked; })} onRemove={() => update((draft) => { draft.testimonials.items.splice(index, 1); })} onUp={() => move(update, (draft) => draft.testimonials.items, index, -1)} onDown={() => move(update, (draft) => draft.testimonials.items, index, 1)} upDisabled={index === 0} downDisabled={index === content.testimonials.items.length - 1}>
@@ -398,7 +456,9 @@ function TestimonialFields({ copy, language, content, update }: { copy: Homepage
 function FaqFields({ copy, language, content, update }: { copy: HomepageEditorCopy; language: Locale; content: HomepageContent; update: (recipe: (draft: HomepageContent) => void) => void }) {
   return (
     <ListSection copy={copy} enabled={content.faq.enabled} onEnabled={(checked) => update((draft) => { draft.faq.enabled = checked; })} onAdd={() => update((draft) => { draft.faq.items.push({ id: crypto.randomUUID(), enabled: true, question: blankLocalized(), answer: blankLocalized() }); })}>
-      <Pair label={copy.fields.title} value={content.faq.title} language={language} onChange={(value) => update((draft) => { draft.faq.title[language] = value; })} />
+      <div className={panelClassName}>
+        <Pair label={copy.fields.title} value={content.faq.title} language={language} onChange={(value) => update((draft) => { draft.faq.title[language] = value; })} />
+      </div>
       {content.faq.items.map((item, index) => (
         <Entry key={item.id} copy={copy} enabled={item.enabled} onEnabled={(checked) => update((draft) => { const current = draft.faq.items[index]; if (current) current.enabled = checked; })} onRemove={() => update((draft) => { draft.faq.items.splice(index, 1); })} onUp={() => move(update, (draft) => draft.faq.items, index, -1)} onDown={() => move(update, (draft) => draft.faq.items, index, 1)} upDisabled={index === 0} downDisabled={index === content.faq.items.length - 1}>
           <Pair label={copy.fields.question} value={item.question} language={language} onChange={(value) => update((draft) => { const current = draft.faq.items[index]; if (current) current.question[language] = value; })} />
@@ -411,7 +471,7 @@ function FaqFields({ copy, language, content, update }: { copy: HomepageEditorCo
 
 function CtaFields({ copy, language, content, update }: { copy: HomepageEditorCopy; language: Locale; content: HomepageContent; update: (recipe: (draft: HomepageContent) => void) => void }) {
   return (
-    <div className="grid gap-4">
+    <div className={panelClassName}>
       <Toggle label={copy.enabled} checked={content.cta.enabled} onChange={(checked) => update((draft) => { draft.cta.enabled = checked; })} />
       <Pair label={copy.fields.title} value={content.cta.title} language={language} onChange={(value) => update((draft) => { draft.cta.title[language] = value; })} />
       <Area label={copy.fields.description} value={content.cta.description[language]} onChange={(value) => update((draft) => { draft.cta.description[language] = value; })} />
@@ -484,7 +544,7 @@ function WebsiteFields({ copy, content, mediaBase, update, onNotice }: { copy: H
 
 function EditorCard({ icon, iconClassName, title, description, children }: { icon?: ReactNode; iconClassName?: string; title: string; description: string; children: ReactNode }) {
   return (
-    <section className="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+    <section className="rounded-2xl border border-line bg-surface p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
       <div className="mb-4 flex items-start gap-3">
         {icon ? <span className={`inline-flex size-9 shrink-0 items-center justify-center rounded-xl ${iconClassName ?? "bg-surface-muted text-foreground"}`}>{icon}</span> : null}
         <div>
@@ -643,7 +703,7 @@ function FooterFields({ copy, content, update }: { copy: HomepageEditorCopy; con
   }
 
   return (
-    <section className="rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)] sm:p-5">
+    <section className="rounded-2xl border border-line bg-surface p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-start gap-3">
           <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand"><Link2 className="size-4" aria-hidden="true" /></span>
@@ -836,7 +896,7 @@ function FooterLinkRow({ layout, index, link, copy, content, copied, update, onC
 
 function SeoFields({ copy, language, content, mediaBase, update, onNotice }: { copy: HomepageEditorCopy; language: Locale; content: HomepageContent; mediaBase: string | null; update: (recipe: (draft: HomepageContent) => void) => void; onNotice: (code: HomepageActionCode) => void }) {
   return (
-    <div className="grid gap-4">
+    <div className={panelClassName}>
       <Pair label={copy.fields.seoTitle} value={content.seo.title} language={language} onChange={(value) => update((draft) => { draft.seo.title[language] = value; })} />
       <Area label={copy.fields.seoDescription} value={content.seo.description[language]} onChange={(value) => update((draft) => { draft.seo.description[language] = value; })} />
       <Pair label={copy.fields.ogTitle} value={content.seo.ogTitle} language={language} onChange={(value) => update((draft) => { draft.seo.ogTitle[language] = value; })} />
@@ -887,9 +947,11 @@ function ImageField({ copy, label, path, mediaBase, onPath, onNotice }: { copy: 
 function ListSection({ copy, enabled, onEnabled, onAdd, children }: { copy: HomepageEditorCopy; enabled: boolean; onEnabled: (checked: boolean) => void; onAdd: () => void; children: ReactNode }) {
   return (
     <div className="grid gap-4">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:px-5">
         <Toggle label={copy.enabled} checked={enabled} onChange={onEnabled} />
-        <button type="button" onClick={onAdd} className="inline-flex h-9 items-center rounded-lg border border-line px-3 text-sm font-medium">{copy.add}</button>
+        <button type="button" onClick={onAdd} className="inline-flex h-10 items-center rounded-xl border border-brand/20 bg-brand/10 px-4 text-sm font-semibold text-brand transition hover:bg-brand/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+          {copy.add}
+        </button>
       </div>
       {children}
     </div>
@@ -899,13 +961,13 @@ function ListSection({ copy, enabled, onEnabled, onAdd, children }: { copy: Home
 function Entry({ copy, enabled, enabledLabel, onEnabled, onRemove, onUp, onDown, upDisabled, downDisabled, hideRemove = false, children }: { copy: HomepageEditorCopy; enabled: boolean; enabledLabel?: string; onEnabled: (checked: boolean) => void; onRemove: () => void; onUp: () => void; onDown: () => void; upDisabled: boolean; downDisabled: boolean; hideRemove?: boolean; children: ReactNode }) {
   const [confirming, setConfirming] = useState(false);
   return (
-    <div className="grid gap-3 rounded-xl border border-line p-3">
-      <div className="flex items-center justify-between gap-2">
+    <div className="grid gap-4 rounded-2xl border border-line bg-surface p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
         <Toggle label={enabledLabel ?? copy.enabled} checked={enabled} onChange={onEnabled} />
-        <span className="flex gap-1">
+        <span className="flex flex-wrap gap-1.5">
           <IconButton label={copy.moveUp} disabled={upDisabled} onClick={onUp}><ArrowUp className="size-4" /></IconButton>
           <IconButton label={copy.moveDown} disabled={downDisabled} onClick={onDown}><ArrowDown className="size-4" /></IconButton>
-          {hideRemove ? null : <IconButton label={copy.remove} onClick={() => setConfirming(true)}><Trash2 className="size-4" /></IconButton>}
+          {hideRemove ? null : <IconButton tone="danger" label={copy.remove} onClick={() => setConfirming(true)}><Trash2 className="size-4" /></IconButton>}
         </span>
       </div>
       {children}
@@ -954,7 +1016,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
 
 function Field({ label, required = false, dir, children }: { label: string; required?: boolean; dir?: "ltr" | "rtl"; children: ReactNode }) {
   return (
-    <label className="grid gap-1.5 text-sm">
+    <label className="grid gap-2 text-sm">
       <span dir={dir} className={`font-medium text-foreground ${dir === "rtl" ? "text-end" : ""}`}>{label}{required ? <span className="text-rose-500"> *</span> : null}</span>
       {children}
     </label>
@@ -965,10 +1027,13 @@ function Pair({ label, value, language, onChange }: { label: string; value: Loca
   return <Field label={label}><input className={fieldClassName} value={value[language]} onChange={(event) => onChange(event.target.value)} /></Field>;
 }
 
-function Area({ label, value, dir, onChange }: { label: string; value: string; dir?: "ltr" | "rtl"; onChange: (value: string) => void }) {
-  return <Field label={label} dir={dir}><textarea dir={dir} rows={3} className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand" value={value} onChange={(event) => onChange(event.target.value)} /></Field>;
+function Area({ label, value, dir, rows = 3, onChange }: { label: string; value: string; dir?: "ltr" | "rtl"; rows?: number; onChange: (value: string) => void }) {
+  return <Field label={label} dir={dir}><textarea dir={dir} rows={rows} className="min-h-24 w-full resize-y rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm leading-6 text-foreground outline-none transition focus-visible:border-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand" value={value} onChange={(event) => onChange(event.target.value)} /></Field>;
 }
 
-function IconButton({ label, disabled, quiet = false, onClick, children }: { label: string; disabled?: boolean; quiet?: boolean; onClick: () => void; children: ReactNode }) {
-  return <button type="button" aria-label={label} disabled={disabled} onClick={onClick} className={quiet ? "inline-flex size-6 items-center justify-center rounded-md text-current/70 hover:bg-surface hover:text-current disabled:opacity-30" : "inline-flex size-8 items-center justify-center rounded-lg border border-line text-muted hover:text-foreground disabled:opacity-40"}>{children}</button>;
+function IconButton({ label, disabled, quiet = false, tone = "default", onClick, children }: { label: string; disabled?: boolean; quiet?: boolean; tone?: "default" | "danger"; onClick: () => void; children: ReactNode }) {
+  const toneClass = tone === "danger"
+    ? "border-rose-100 bg-rose-50 text-rose-500 hover:bg-rose-100 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
+    : "border-line bg-surface text-muted hover:bg-surface-muted hover:text-foreground";
+  return <button type="button" aria-label={label} disabled={disabled} onClick={onClick} className={quiet ? "inline-flex size-7 items-center justify-center rounded-lg text-current/70 hover:bg-surface hover:text-current focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-30" : `inline-flex size-9 items-center justify-center rounded-xl border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-40 ${toneClass}`}>{children}</button>;
 }

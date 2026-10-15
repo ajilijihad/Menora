@@ -39,7 +39,7 @@ export function AdminNav({ locale, copy }: { locale: Locale; copy: AdminCopy }) 
 
   return (
     <nav aria-label={copy.title} className="border-b border-line bg-surface">
-      <div className="mx-auto flex w-full max-w-7xl gap-1 overflow-x-auto px-4 py-2">
+      <div className="mx-auto flex w-full max-w-[90rem] gap-1 overflow-x-auto px-4 py-2.5 lg:px-6">
         {items.map((item) => {
           const href = item.segment ? `/${locale}/admin/${item.segment}` : `/${locale}/admin`;
           const current = item.segment
@@ -52,7 +52,7 @@ export function AdminNav({ locale, copy }: { locale: Locale; copy: AdminCopy }) 
               key={item.segment || "overview"}
               href={href}
               aria-current={current ? "page" : undefined}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+              className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-xl px-3.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
                 current ? "bg-brand/10 font-medium text-brand" : "text-muted hover:bg-surface-muted hover:text-foreground"
               }`}
             >

@@ -333,7 +333,7 @@ export async function loadBusinesses(input: { q?: string; status?: string; page?
   const range = pageRange(page);
   let query = access.supabase
     .from("businesses")
-    .select("id, name, slug, status, is_published, suspended_at, owner_id, created_at", { count: "exact" });
+    .select("id, name, slug, status, is_published, suspended_at, owner_id, logo_path, created_at", { count: "exact" });
   if (status === "suspended") {
     query = query.not("suspended_at", "is", null);
   } else if (status !== "all") {
