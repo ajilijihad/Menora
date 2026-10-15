@@ -1,6 +1,7 @@
 import "server-only";
 
 import { parseBusinessId } from "@/lib/businesses/ids";
+import { parseCategoryIcon, type CategoryIcon } from "@/lib/menus/category-icons";
 import { resolveMenuTheme } from "@/lib/menus/public-menu";
 import { dietaryLabels, type DietaryLabel, type MenuFilter } from "@/lib/menus/schema";
 import { isCurrencyCode, type CurrencyCode } from "@/lib/menus/money";
@@ -12,6 +13,8 @@ export type MenuCategoryRecord = {
   nameAr: string | null;
   description: string | null;
   descriptionAr: string | null;
+  icon: CategoryIcon | null;
+  imagePath: string | null;
   sortOrder: number;
   isActive: boolean;
   isPublished: boolean;
@@ -70,6 +73,8 @@ function categoryFrom(row: {
   name_ar: string | null;
   description: string | null;
   description_ar: string | null;
+  icon: string | null;
+  image_path: string | null;
   sort_order: number;
   is_active: boolean;
   is_published: boolean;
@@ -78,6 +83,8 @@ function categoryFrom(row: {
     id: row.id,
     name: row.name,
     nameAr: row.name_ar,
+    icon: parseCategoryIcon(row.icon),
+    imagePath: row.image_path,
     description: row.description,
     descriptionAr: row.description_ar,
     sortOrder: row.sort_order,
@@ -160,7 +167,7 @@ export async function listCategories(businessId: string): Promise<MenuCategoryRe
   const supabase = await createServerSupabaseClient();
   const { data, error } = await supabase
     .from("menu_categories")
-    .select("id, name, name_ar, description, description_ar, sort_order, is_active, is_published")
+    .select("id, name, name_ar, description, description_ar, icon, image_path, sort_order, is_active, is_published")
     .eq("business_id", businessId)
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
@@ -181,7 +188,7 @@ export async function getCategory(
   const supabase = await createServerSupabaseClient();
   const { data, error } = await supabase
     .from("menu_categories")
-    .select("id, name, name_ar, description, description_ar, sort_order, is_active, is_published")
+    .select("id, name, name_ar, description, description_ar, icon, image_path, sort_order, is_active, is_published")
     .eq("business_id", businessId)
     .eq("id", id)
     .maybeSingle();

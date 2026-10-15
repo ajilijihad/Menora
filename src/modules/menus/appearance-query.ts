@@ -10,7 +10,7 @@ import { businessCurrency } from "./queries";
 
 const themeColumns =
   "menu_theme, primary_color, accent_color, background_color, text_color, font_choice, type_scale, card_layout, image_ratio, radius_px, spacing_step, nav_style, featured_style";
-const categoryColumns = "id, name, name_ar, description, description_ar, sort_order";
+const categoryColumns = "id, name, name_ar, description, description_ar, icon, image_path, sort_order";
 const productColumns =
   "id, category_id, name, name_ar, description, description_ar, price_cents, compare_at_cents, stock_status, is_featured, dietary_labels, sort_order";
 const optionColumns = "id, product_id, name, name_ar, price_cents, sort_order";

@@ -31,6 +31,8 @@ export function withSampleDishes(menu: PublicMenu, categoryName: string, dishNam
         nameAr: categoryName,
         description: null,
         descriptionAr: null,
+        icon: null,
+        imageUrl: null,
         products: [first, second],
       },
     ],

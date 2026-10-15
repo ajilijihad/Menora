@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 
 import { canEditMenu } from "@/lib/businesses/access";
 
-import { buildMenuImagePath, isSafeMenuImagePath } from "./media";
+import { buildCategoryImagePath, buildMenuImagePath, isSafeCategoryImagePath, isSafeMenuImagePath } from "./media";
 import { formatMinor, minorUnits } from "./money";
 import { parseCategoryForm, parseProductForm } from "./schema";
 
@@ -116,6 +116,15 @@ describe("menu isolation helpers", () => {
       ),
       false,
     );
+    const categoryPath = buildCategoryImagePath(
+      businessId,
+      categoryId,
+      "webp",
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    );
+    assert.equal(isSafeCategoryImagePath(businessId, categoryId, categoryPath), true);
+    assert.equal(isSafeCategoryImagePath(businessId, productId, categoryPath), false);
+    assert.equal(isSafeCategoryImagePath(businessId, categoryId, `${categoryPath}/../secret.webp`), false);
     assert.equal(canEditMenu("editor"), true);
     assert.equal(canEditMenu("manager"), true);
     assert.equal(canEditMenu("owner"), true);

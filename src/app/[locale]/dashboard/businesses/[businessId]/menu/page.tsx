@@ -7,6 +7,7 @@ import { Suspense, type ReactNode } from "react";
 import { Notice } from "@/components/auth/notice";
 import { UpgradePrompt } from "@/components/billing/upgrade-prompt";
 import { CopyValue } from "@/components/dashboard/domain-controls";
+import { CategoryGlyph } from "@/components/menu/category-glyph";
 import { CategorySorter } from "@/components/menu/category-sorter";
 import { MenuTabs } from "@/components/menu/menu-tabs";
 import { CurrencyForm } from "@/components/menu/currency-form";
@@ -30,7 +31,7 @@ import {
 import type { MenuCopy } from "@/lib/i18n/menu-copy";
 import { canAddProduct } from "@/modules/billing/queries";
 import { getMyBusiness } from "@/modules/businesses/queries";
-import { businessCurrency, categoryCoverPaths, getMenuTheme, listCategories, listProducts, menuStats, type MenuCategoryRecord, type MenuProductRecord } from "@/modules/menus/queries";
+import { businessCurrency, getMenuTheme, listCategories, listProducts, menuStats, type MenuCategoryRecord, type MenuProductRecord } from "@/modules/menus/queries";
 
 type MenuPageProps = {
   params: Promise<{ locale: string; businessId: string }>;
@@ -100,11 +101,10 @@ async function MenuContent({
   const tab = first(query.tab) === "products" ? "products" : "categories";
   const categories = await listCategories(business.id);
   const selectedCategory = categories.some((category) => category.id === categoryId) ? categoryId : null;
-  const [currency, theme, stats, covers, listed] = await Promise.all([
+  const [currency, theme, stats, listed] = await Promise.all([
     businessCurrency(business.id),
     getMenuTheme(business.id, business.businessType),
     menuStats(business.id, categories.map((category) => category.id)),
-    categoryCoverPaths(business.id),
     listProducts(business.id, { term, filter, categoryId: selectedCategory, page }),
   ]);
   const { products, total, pageSize } = listed;
@@ -247,15 +247,15 @@ async function MenuContent({
               const count = stats.byCategory.get(category.id) ?? 0;
               const primary = displayCategory(category.name, category.nameAr, locale);
               const secondary = locale === "ar" ? category.name : category.nameAr;
-              const cover = menuPhotoUrl(covers.get(category.id) ?? null);
+              const cover = menuPhotoUrl(category.imagePath);
               return (
                 <div key={category.id} className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-                  {cover ? (
-                    // Category covers reuse the first product photo already stored for this menu.
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={cover} alt="" className="size-12 shrink-0 rounded-xl object-cover" />
+                  {cover || category.icon ? (
+                    <span className="inline-flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface-muted text-brand">
+                      <CategoryGlyph icon={category.icon} imageUrl={cover} className="size-5" imageClassName="size-12 object-cover" />
+                    </span>
                   ) : (
-                    <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-xl bg-surface-muted text-muted"><FolderTree className="size-5" /></span>
+                    <span className="size-12 shrink-0" />
                   )}
                   <div className="min-w-0 flex-1">
                     <p dir="auto" className="font-medium">{primary}</p>

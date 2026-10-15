@@ -48,7 +48,23 @@ describe("public menu assembly", () => {
       },
       theme: "cafe",
       supabaseUrl: "https://example.supabase.co",
-      categories: [{ id: categoryId, name: "Mains", name_ar: "الأطباق", sort_order: 1 }],
+      categories: [
+        {
+          id: categoryId,
+          name: "Mains",
+          name_ar: "الأطباق",
+          icon: "fish",
+          image_path: `${businessId}/cat-${categoryId}-eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee.jpg`,
+          sort_order: 1,
+        },
+        {
+          id: "ffffffff-ffff-4fff-8fff-ffffffffffff",
+          name: "Dropped",
+          icon: "salad",
+          image_path: "../secret.jpg",
+          sort_order: 2,
+        },
+      ],
       products: [
         {
           id: productId,
@@ -61,6 +77,14 @@ describe("public menu assembly", () => {
           stock_status: "out_of_stock",
           is_featured: true,
           dietary_labels: ["gluten", "secret"],
+          sort_order: 1,
+        },
+        {
+          id: "abababab-abab-4aba-8aba-abababababab",
+          category_id: "ffffffff-ffff-4fff-8fff-ffffffffffff",
+          name: "Salad",
+          price_cents: 800,
+          stock_status: "in_stock",
           sort_order: 1,
         },
       ],
@@ -94,6 +118,10 @@ describe("public menu assembly", () => {
     assert.deepEqual(menu.featured[0]?.labels, ["gluten"]);
     assert.equal(menu.featured[0]?.variants.length, 1);
     assert.equal(menu.featured[0]?.imageUrls.length, 1);
+    assert.equal(menu.categories[0]?.icon, null);
+    assert.equal(menu.categories[0]?.imageUrl?.includes(`/cat-${categoryId}-`), true);
+    assert.equal(menu.categories[1]?.icon, "salad");
+    assert.equal(menu.categories[1]?.imageUrl, null);
     assert.equal("owner_id" in menu, false);
     assert.equal(JSON.stringify(menu).includes("secret"), false);
   });

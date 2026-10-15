@@ -1,3 +1,4 @@
+import type { CategoryIcon } from "@/lib/menus/category-icons";
 import type { DietaryLabel, MenuFilter, MenuMessageCode } from "@/lib/menus/schema";
 import type { CurrencyCode } from "@/lib/menus/money";
 
@@ -56,6 +57,11 @@ export type MenuCopy = {
   descriptionArPlaceholder: string;
   availableHint: string;
   publishedHint: string;
+  categoryPicture: string;
+  categoryPictureHint: string;
+  categoryNoPicture: string;
+  categoryImport: string;
+  categoryIcons: Record<CategoryIcon, string>;
   productTitle: string;
   productIntro: string;
   productEditTitle: string;
@@ -306,6 +312,38 @@ export const menuCopyEn: MenuCopy = {
   descriptionArPlaceholder: "أدخل وصفًا مختصرًا لهذه الفئة بالعربية...",
   availableHint: "Show this category in your menu.",
   publishedHint: "Make this category visible to customers.",
+  categoryPicture: "Picture",
+  categoryPictureHint: "Optional. Choose a food or drink icon, or import an image. Leave both empty to add the category without a picture.",
+  categoryNoPicture: "No picture",
+  categoryImport: "Import image",
+  categoryIcons: {
+    meal: "Meal",
+    drink: "Drink",
+    juice: "Juice",
+    coffee: "Coffee",
+    water: "Water",
+    wine: "Wine",
+    beer: "Beer",
+    cocktail: "Cocktail",
+    milk: "Milk",
+    fish: "Fish",
+    vegetable: "Vegetable",
+    salad: "Salad",
+    fruit: "Fruit",
+    dessert: "Dessert",
+    "ice-cream": "Ice cream",
+    cake: "Cake",
+    bakery: "Bakery",
+    burger: "Burger",
+    pizza: "Pizza",
+    chicken: "Chicken",
+    meat: "Meat",
+    soup: "Soup",
+    breakfast: "Breakfast",
+    sandwich: "Sandwich",
+    grill: "Grill",
+    snack: "Snack",
+  },
   productTitle: "Create product",
   productIntro: "Add a new product to your menu. You can add names, descriptions, prices, and more details in both languages.",
   productEditTitle: "Edit product",
@@ -440,6 +478,38 @@ export const menuCopyAr: MenuCopy = {
   descriptionArPlaceholder: "أدخل وصفًا مختصرًا لهذه الفئة بالعربية...",
   availableHint: "أظهر هذا التصنيف في قائمتك.",
   publishedHint: "اجعل هذا التصنيف ظاهرًا للزبائن.",
+  categoryPicture: "الصورة",
+  categoryPictureHint: "اختياري. اختر أيقونة طعام أو شراب، أو استورد صورة. اتركهما فارغين لإضافة التصنيف بدون صورة.",
+  categoryNoPicture: "بدون صورة",
+  categoryImport: "استيراد صورة",
+  categoryIcons: {
+    meal: "وجبة",
+    drink: "مشروب",
+    juice: "عصير",
+    coffee: "قهوة",
+    water: "ماء",
+    wine: "نبيذ",
+    beer: "بيرة",
+    cocktail: "كوكتيل",
+    milk: "حليب",
+    fish: "سمك",
+    vegetable: "خضار",
+    salad: "سلطة",
+    fruit: "فاكهة",
+    dessert: "حلويات",
+    "ice-cream": "آيس كريم",
+    cake: "كيك",
+    bakery: "مخبوزات",
+    burger: "برغر",
+    pizza: "بيتزا",
+    chicken: "دجاج",
+    meat: "لحم",
+    soup: "شوربة",
+    breakfast: "فطور",
+    sandwich: "ساندويتش",
+    grill: "مشاوي",
+    snack: "وجبة خفيفة",
+  },
   productTitle: "إنشاء منتج",
   productIntro: "أضف منتجًا جديدًا إلى قائمتك. يمكنك إضافة الأسماء والأوصاف والأسعار وتفاصيل أخرى باللغتين.",
   productEditTitle: "تعديل المنتج",

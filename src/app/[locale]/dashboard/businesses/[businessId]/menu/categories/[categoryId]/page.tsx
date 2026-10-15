@@ -9,6 +9,7 @@ import { LoadingState } from "@/components/states/loading-state";
 import { canEditMenu } from "@/lib/businesses/access";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/locales";
+import { menuPhotoUrl } from "@/lib/menus/image-url";
 import { getMyBusiness } from "@/modules/businesses/queries";
 import { getCategory } from "@/modules/menus/queries";
 
@@ -55,6 +56,7 @@ async function EditCategoryContent({
       <p className="mt-1 max-w-2xl text-sm text-muted">{copy.categoryEditIntro}</p>
       <div className="mt-6">
         <CategoryForm
+          key={`${category.id}:${category.icon ?? ""}:${category.imagePath ?? ""}`}
           locale={locale}
           copy={copy}
           businessId={business.id}
@@ -66,6 +68,8 @@ async function EditCategoryContent({
             descriptionAr: category.descriptionAr ?? "",
             isActive: category.isActive,
             isPublished: category.isPublished,
+            icon: category.icon,
+            imageUrl: menuPhotoUrl(category.imagePath),
           }}
         />
       </div>

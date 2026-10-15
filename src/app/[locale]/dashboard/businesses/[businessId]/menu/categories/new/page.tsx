@@ -47,7 +47,7 @@ async function NewCategoryContent({ locale, businessId }: { locale: Locale; busi
           locale={locale}
           copy={copy}
           businessId={business.id}
-          initial={{ name: "", nameAr: "", description: "", descriptionAr: "", isActive: true, isPublished: false }}
+          initial={{ name: "", nameAr: "", description: "", descriptionAr: "", isActive: true, isPublished: false, icon: null, imageUrl: null }}
         />
       </div>
     </main>

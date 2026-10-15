@@ -1,6 +1,6 @@
 "use client";
 
-import { Beef, Coffee, Croissant, CupSoda, Drumstick, Flame, Menu, Salad, Sandwich, Soup, UtensilsCrossed, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState, type CSSProperties, type ReactNode } from "react";
 
 import {
@@ -13,19 +13,24 @@ import {
   productName,
   productSecondary,
 } from "@/components/public-menu/menu-details";
+import { CategoryGlyph } from "@/components/menu/category-glyph";
 import { MenuImage } from "@/components/public-menu/menu-image";
 import type { PublicMenuCopy } from "@/lib/i18n/public-menu-copy";
 import type { Locale } from "@/lib/i18n/locales";
-import { appearanceStyle, type MenuAppearance } from "@/lib/menus/appearance";
+import {
+  appearanceStyle,
+  featuredItemClass,
+  featuredListClass,
+  navLinkClass,
+  navLinkStyle,
+  navListClass,
+  type MenuAppearance,
+} from "@/lib/menus/appearance";
 import { menuHasContent, type PublicCategory, type PublicMenu, type PublicProduct } from "@/lib/menus/public-menu";
 
 export function themeStyle(appearance: MenuAppearance, scheme: "light" | "dark"): CSSProperties {
   return {
     ...appearanceStyle(appearance),
-    fontFamily:
-      appearance.font === "serif"
-        ? 'Georgia, "Times New Roman", var(--font-plex), var(--font-noto-arabic), serif'
-        : "var(--font-plex), var(--font-geist-sans), var(--font-noto-arabic), sans-serif",
     colorScheme: scheme,
   };
 }
@@ -38,12 +43,6 @@ export type ThemeProps = {
   search: ReactNode;
   language: ReactNode;
 };
-
-const categoryIcons = [Flame, UtensilsCrossed, Sandwich, Drumstick, Salad, Coffee, CupSoda, Croissant, Soup, Beef];
-
-export function categoryIcon(index: number) {
-  return categoryIcons[index % categoryIcons.length] ?? UtensilsCrossed;
-}
 
 export function heroSource(menu: PublicMenu): string | null {
   if (menu.coverUrl) {
@@ -105,12 +104,14 @@ export function CategoryScroller({
   locale,
   copy,
   className,
+  navStyle,
   itemClassName,
 }: {
   categories: PublicCategory[];
   locale: Locale;
   copy: PublicMenuCopy;
   className: string;
+  navStyle: MenuAppearance["navStyle"];
   itemClassName: (active: boolean) => string;
 }) {
   const [picked, setPicked] = useState<string | null>(null);
@@ -121,14 +122,24 @@ export function CategoryScroller({
 
   return (
     <nav aria-label={copy.categories} className={className}>
-      <ul className="flex gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden">
-        {categories.map((category, index) => {
-          const Icon = categoryIcon(index);
+      <ul className={`${navListClass(navStyle)} px-4 py-3 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden`}>
+        {categories.map((category) => {
           const active = activeId === category.id;
+          const tone = navStyle === "pills" ? itemClassName(active) : active ? "font-semibold" : "opacity-80";
           return (
-            <li key={category.id} className="shrink-0">
-              <a href={`#category-${category.id}`} className={itemClassName(active)} onClick={() => setPicked(category.id)}>
-                <Icon className="size-4 shrink-0" aria-hidden="true" />
+            <li key={category.id} className={navStyle === "list" ? "min-w-0" : "shrink-0"}>
+              <a
+                href={`#category-${category.id}`}
+                className={`${navLinkClass(navStyle)} gap-2 ${tone}`}
+                style={active ? navLinkStyle(navStyle) : undefined}
+                onClick={() => setPicked(category.id)}
+              >
+                <CategoryGlyph
+                  icon={category.icon}
+                  imageUrl={category.imageUrl}
+                  className="size-4 shrink-0"
+                  imageClassName="size-4 shrink-0 rounded-full object-cover"
+                />
                 <span dir="auto">{productName(locale, category)}</span>
               </a>
             </li>
@@ -136,6 +147,122 @@ export function CategoryScroller({
         })}
       </ul>
     </nav>
+  );
+}
+
+export function CategoryMark({ category }: { category: PublicCategory }) {
+  if (!category.icon && !category.imageUrl) {
+    return null;
+  }
+
+  return (
+    <CategoryGlyph
+      icon={category.icon}
+      imageUrl={category.imageUrl}
+      className="size-5 shrink-0"
+      imageClassName="size-8 shrink-0 rounded-md object-cover"
+    />
+  );
+}
+
+function imageRatioClass(ratio: MenuAppearance["imageRatio"]) {
+  if (ratio === "square") return "aspect-square";
+  if (ratio === "portrait") return "aspect-[3/4]";
+  return "aspect-[4/3]";
+}
+
+export function MenuProducts({
+  products,
+  menu,
+  locale,
+  copy,
+  cardClassName,
+  priceClassName,
+}: {
+  products: PublicProduct[];
+  menu: PublicMenu;
+  locale: Locale;
+  copy: PublicMenuCopy;
+  cardClassName: string;
+  priceClassName: string;
+}) {
+  const { cardLayout, imageRatio } = menu.appearance;
+  const ratio = imageRatioClass(imageRatio);
+  const frame = "overflow-hidden rounded-[var(--menu-radius)]";
+
+  if (cardLayout === "horizontal") {
+    return (
+      <ul className="flex flex-col gap-[var(--menu-space)]">
+        {products.map((product) => (
+          <li key={product.id} data-analytics-product={product.id} className={`${frame} flex items-center gap-3 ${cardClassName}`}>
+            <ProductPhoto src={product.imageUrls[0] ?? null} alt="" className={`${ratio} w-24 shrink-0 object-cover sm:w-32`} />
+            <div className="min-w-0 p-3">
+              <DishCopy product={product} locale={locale} copy={copy} currency={menu.currency} priceClassName={priceClassName} />
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  if (cardLayout === "overlay") {
+    return (
+      <ul className="grid grid-cols-2 gap-[var(--menu-space)] md:grid-cols-3">
+        {products.map((product) => (
+          <li key={product.id} data-analytics-product={product.id} className={`${frame} relative min-h-40 ${cardClassName}`}>
+            <ProductPhoto src={product.imageUrls[0] ?? null} alt="" className={`${ratio} w-full object-cover`} />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 text-white">
+              <DishCopy product={product} locale={locale} copy={copy} currency={menu.currency} priceClassName="mt-2 text-sm font-semibold text-white" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  return (
+    <ul className="grid grid-cols-2 gap-[var(--menu-space)] md:grid-cols-3">
+      {products.map((product) => (
+        <li key={product.id} data-analytics-product={product.id} className={`${frame} flex h-full flex-col ${cardClassName}`}>
+          <ProductPhoto src={product.imageUrls[0] ?? null} alt="" className={`${ratio} w-full object-cover`} />
+          <div className="p-3">
+            <DishCopy product={product} locale={locale} copy={copy} currency={menu.currency} priceClassName={priceClassName} />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function FeaturedDishes({
+  menu,
+  locale,
+  copy,
+  cardClassName,
+  priceClassName,
+}: {
+  menu: PublicMenu;
+  locale: Locale;
+  copy: PublicMenuCopy;
+  cardClassName: string;
+  priceClassName: string;
+}) {
+  if (menu.featured.length === 0) {
+    return null;
+  }
+
+  const style = menu.appearance.featuredStyle;
+  return (
+    <section className="px-4 sm:px-6" style={{ paddingBlock: "var(--menu-space)" }}>
+      <h2 className="text-lg font-semibold">{copy.featured}</h2>
+      <ul className={featuredListClass(style)}>
+        {menu.featured.map((product) => (
+          <li key={product.id} data-analytics-product={product.id} className={featuredItemClass(style)}>
+            <MenuProducts products={[product]} menu={menu} locale={locale} copy={copy} cardClassName={cardClassName} priceClassName={priceClassName} />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

@@ -442,7 +442,7 @@ function Choice<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <label className="flex flex-col gap-1 text-sm">
+    <div className="flex flex-col gap-1 text-sm">
       <span className="font-medium">{label}</span>
       <Select
         name={name}
@@ -451,7 +451,7 @@ function Choice<T extends string>({
         options={options.map((option) => ({ value: option, label: labels[option] }))}
         className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-700 dark:bg-zinc-950"
       />
-    </label>
+    </div>
   );
 }
 

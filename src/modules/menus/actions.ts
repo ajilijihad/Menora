@@ -10,7 +10,8 @@ import { parseLocale } from "@/lib/auth/schemas";
 import { canEditBusiness } from "@/lib/businesses/access";
 import { parseBusinessId } from "@/lib/businesses/ids";
 import { imageExtension, maxImageBytes } from "@/lib/businesses/media";
-import { buildMenuImagePath, isSafeMenuImagePath, menuImageLimit } from "@/lib/menus/media";
+import { parseCategoryIcon } from "@/lib/menus/category-icons";
+import { buildCategoryImagePath, buildMenuImagePath, isSafeCategoryImagePath, isSafeMenuImagePath, menuImageLimit } from "@/lib/menus/media";
 import { currencyExponent } from "@/lib/menus/money";
 import { menuRateLimiter, menuRateLimits } from "@/lib/menus/rate-limit";
 import {
@@ -148,6 +149,61 @@ async function replaceOptions(
     }
   }
 
+  return null;
+}
+
+async function removeCategoryImage(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  businessId: string,
+  categoryId: string,
+  path: string,
+) {
+  if (!isSafeCategoryImagePath(businessId, categoryId, path)) {
+    return;
+  }
+  await supabase.storage.from(mediaBucket).remove([path]);
+}
+
+async function storeCategoryImage(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  businessId: string,
+  categoryId: string,
+  file: File,
+): Promise<MenuMessageCode | null> {
+  if (file.size > maxImageBytes) {
+    return "image_too_large";
+  }
+  const extension = imageExtension(file.type);
+  if (!extension) {
+    return "image_type";
+  }
+  const path = buildCategoryImagePath(businessId, categoryId, extension, crypto.randomUUID());
+  if (!isSafeCategoryImagePath(businessId, categoryId, path)) {
+    return "image_failed";
+  }
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (bytes.byteLength === 0) {
+    return "image_failed";
+  }
+  if (bytes.byteLength > maxImageBytes) {
+    return "image_too_large";
+  }
+  const { error: uploadError } = await supabase.storage.from(mediaBucket).upload(path, new Blob([bytes], { type: file.type }), {
+    contentType: file.type,
+    upsert: false,
+  });
+  if (uploadError) {
+    return "image_failed";
+  }
+  const { error } = await supabase
+    .from("menu_categories")
+    .update({ icon: null, image_path: path })
+    .eq("id", categoryId)
+    .eq("business_id", businessId);
+  if (error) {
+    await supabase.storage.from(mediaBucket).remove([path]);
+    return "image_failed";
+  }
   return null;
 }
 
@@ -303,7 +359,11 @@ export async function saveCategoryAction(_state: unknown, formData: FormData) {
     return { message: "rate_limited" as const };
   }
 
-  const categoryId = parseBusinessId(formData.get("categoryId"));
+  const requestedId = parseBusinessId(formData.get("categoryId"));
+  const chosenIcon = parseCategoryIcon(formData.get("icon"));
+  const file = formData.get("image");
+  const hasFile = file instanceof File && file.size > 0;
+  const removeImage = formData.get("removeImage") === "1" || hasFile || chosenIcon !== null;
   const payload = {
     name: parsed.data.name,
     name_ar: parsed.data.nameAr,
@@ -311,13 +371,28 @@ export async function saveCategoryAction(_state: unknown, formData: FormData) {
     description_ar: parsed.data.descriptionAr,
     is_active: parsed.data.isActive,
     is_published: parsed.data.isPublished,
+    icon: hasFile ? null : chosenIcon,
+    image_path: null as string | null,
   };
 
-  if (categoryId) {
+  let categoryId = requestedId;
+  let previousPath: string | null = null;
+  if (requestedId) {
+    const existing = await access.supabase
+      .from("menu_categories")
+      .select("image_path")
+      .eq("id", requestedId)
+      .eq("business_id", access.business.id)
+      .maybeSingle();
+    if (existing.error || !existing.data) {
+      return { message: "not_found" as const };
+    }
+    previousPath = existing.data.image_path;
+    payload.image_path = removeImage ? null : previousPath;
     const { data, error } = await access.supabase
       .from("menu_categories")
       .update(payload)
-      .eq("id", categoryId)
+      .eq("id", requestedId)
       .eq("business_id", access.business.id)
       .select("id");
     if (error) {
@@ -327,10 +402,11 @@ export async function saveCategoryAction(_state: unknown, formData: FormData) {
       return { message: "not_found" as const };
     }
   } else {
+    categoryId = crypto.randomUUID();
     const sortOrder = await nextCategorySort(access.supabase, access.business.id);
     const { error } = await access.supabase.from("menu_categories").insert({
       ...payload,
-      id: crypto.randomUUID(),
+      id: categoryId,
       business_id: access.business.id,
       sort_order: sortOrder,
     });
@@ -339,9 +415,32 @@ export async function saveCategoryAction(_state: unknown, formData: FormData) {
     }
   }
 
+  if (!categoryId) {
+    return { message: "save_failed" as const };
+  }
+
+  let imageError: MenuMessageCode | null = null;
+  if (file instanceof File && file.size > 0) {
+    imageError = await storeCategoryImage(access.supabase, access.business.id, categoryId, file);
+    if (imageError && previousPath) {
+      await access.supabase
+        .from("menu_categories")
+        .update({ icon: null, image_path: previousPath })
+        .eq("id", categoryId)
+        .eq("business_id", access.business.id);
+    }
+  }
+  if (!imageError && previousPath && removeImage) {
+    await removeCategoryImage(access.supabase, access.business.id, categoryId, previousPath);
+  }
+
   revalidatePath(menuPath(locale, access.business.id));
   refreshPublicMenu(access.business.slug);
-  redirect(`${menuPath(locale, access.business.id)}?notice=${categoryId ? "saved" : "created"}`);
+  const notice = imageError ?? (requestedId ? "saved" : "created");
+  const destination = imageError && categoryId
+    ? menuPath(locale, access.business.id, `/categories/${categoryId}`)
+    : menuPath(locale, access.business.id);
+  redirect(`${destination}?notice=${notice}`);
 }
 
 export async function saveProductAction(_state: unknown, formData: FormData) {
@@ -488,6 +587,16 @@ export async function deleteCategoryAction(formData: FormData) {
   const limit = menuRateLimiter.consume(`menu-delete:${await requestIp()}`, menuRateLimits.remove);
   if (!limit.ok) {
     redirect(`${menuPath(locale, access.business.id)}?notice=rate_limited`);
+  }
+
+  const existingCategory = await access.supabase
+    .from("menu_categories")
+    .select("image_path")
+    .eq("id", categoryId)
+    .eq("business_id", access.business.id)
+    .maybeSingle();
+  if (existingCategory.data?.image_path) {
+    await removeCategoryImage(access.supabase, access.business.id, categoryId, existingCategory.data.image_path);
   }
 
   const { data: products } = await access.supabase

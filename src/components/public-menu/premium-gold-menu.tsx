@@ -1,9 +1,8 @@
 import { productName } from "./menu-details";
-import { BrandMark, CategoryScroller, DishCopy, MenuDrawer, MenuStatus, ProductPhoto, heroSource, themeStyle, type ThemeProps } from "./theme-parts";
+import { BrandMark, CategoryMark, CategoryScroller, FeaturedDishes, MenuDrawer, MenuProducts, MenuStatus, ProductPhoto, heroSource, themeStyle, type ThemeProps } from "./theme-parts";
 
 export function PremiumGoldMenu({ menu, locale, copy, query, search, language }: ThemeProps) {
   const hero = heroSource(menu);
-  const featured = menu.featured;
 
   return (
     <div data-public-menu="" className="min-h-dvh" style={themeStyle(menu.appearance, "dark")}>
@@ -14,12 +13,12 @@ export function PremiumGoldMenu({ menu, locale, copy, query, search, language }:
           <BrandMark menu={menu} className="flex min-w-0 items-center gap-2 text-[var(--menu-primary)]" imageClassName="size-9 rounded-full object-cover ring-1 ring-[var(--menu-primary)]" />
           <div className="rounded-full border border-[var(--menu-primary)]/40 px-3 py-1 text-xs text-[var(--menu-primary)]">{language}</div>
         </div>
-        <div className="relative mx-4 min-h-80 overflow-hidden rounded-[1.4rem] border border-[var(--menu-primary)]/30 sm:mx-6 sm:min-h-[28rem]">
+        <div className="relative mx-4 min-h-80 overflow-hidden border border-[var(--menu-primary)]/30 sm:mx-6 sm:min-h-[28rem]" style={{ borderRadius: "var(--menu-radius)" }}>
           <ProductPhoto src={hero} alt="" className="absolute inset-0 h-full w-full" />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/20" />
           <div className="absolute inset-x-0 bottom-0 p-6 text-center sm:p-10">
             <p className="text-xs tracking-[0.35em] text-[var(--menu-primary)]">◆</p>
-            <h1 dir="auto" className="mt-2 font-serif text-3xl text-[var(--menu-secondary)] sm:text-5xl">{menu.name}</h1>
+            <h1 dir="auto" className="mt-2 font-serif text-[var(--menu-secondary)]" style={{ fontSize: "var(--menu-title)" }}>{menu.name}</h1>
             {menu.description ? <p dir="auto" className="mx-auto mt-3 max-w-lg text-sm text-white/80">{menu.description}</p> : null}
           </div>
         </div>
@@ -28,40 +27,18 @@ export function PremiumGoldMenu({ menu, locale, copy, query, search, language }:
         categories={menu.categories}
         locale={locale}
         copy={copy}
+        navStyle={menu.appearance.navStyle}
         className="sticky top-0 z-10 bg-[var(--menu-bg)]/95 backdrop-blur"
-        itemClassName={(active) =>
-          `inline-flex h-11 items-center gap-2 rounded-full border px-4 text-xs tracking-wide ${active ? "border-[var(--menu-primary)] bg-[var(--menu-primary)] text-black" : "border-white/15 text-[var(--menu-secondary)]"}`
-        }
+        itemClassName={(active) => (active ? "text-black" : "border border-white/15 text-[var(--menu-secondary)]")}
       />
       <main id="menu-content" className="mx-auto w-full max-w-6xl pb-16">
         <MenuStatus menu={menu} copy={copy} query={query} />
-        {featured.length > 0 ? (
-          <section className="px-4 py-5 sm:px-6">
-            <h2 className="mb-3 text-center font-serif text-lg text-[var(--menu-primary)]">{copy.featured}</h2>
-            <ul className="grid gap-4 lg:grid-cols-2">
-              {featured.map((product) => (
-                <li key={product.id} data-analytics-product={product.id} className="flex items-center gap-4 rounded-2xl border border-[var(--menu-primary)]/25 bg-white/[0.03] p-3">
-                  <ProductPhoto src={product.imageUrls[0] ?? null} alt="" className="aspect-[4/3] w-36 shrink-0 rounded-xl sm:w-48" />
-                  <DishCopy product={product} locale={locale} copy={copy} currency={menu.currency} priceClassName="mt-2 font-serif text-sm text-[var(--menu-primary)]" />
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+        <FeaturedDishes menu={menu} locale={locale} copy={copy} cardClassName="border border-[var(--menu-primary)]/25 bg-white/[0.03]" priceClassName="mt-2 text-sm text-[var(--menu-primary)]" />
         {menu.categories.map((category) => (
-          <section key={category.id} id={`category-${category.id}`} className="scroll-mt-24 px-4 py-4 sm:px-6">
+          <section key={category.id} id={`category-${category.id}`} className="scroll-mt-24 px-4 sm:px-6" style={{ paddingBlock: "var(--menu-space)" }}>
             <div className="mb-4 h-px bg-gradient-to-r from-transparent via-[var(--menu-primary)] to-transparent" />
-            <h2 dir="auto" className="mb-4 text-center font-serif text-xl text-[var(--menu-secondary)]">{productName(locale, category)}</h2>
-            <ul className="grid grid-cols-2 gap-3 md:grid-cols-3">
-              {category.products.map((product) => (
-                <li key={product.id} data-analytics-product={product.id} className="overflow-hidden rounded-2xl border border-[var(--menu-primary)]/20">
-                  <ProductPhoto src={product.imageUrls[0] ?? null} alt="" className="aspect-square w-full" />
-                  <div className="p-3">
-                    <DishCopy product={product} locale={locale} copy={copy} currency={menu.currency} priceClassName="mt-2 text-sm text-[var(--menu-primary)]" />
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <h2 dir="auto" className="mb-4 flex items-center justify-center gap-2 text-center font-serif text-xl text-[var(--menu-secondary)]"><CategoryMark category={category} />{productName(locale, category)}</h2>
+            <MenuProducts products={category.products} menu={menu} locale={locale} copy={copy} cardClassName="border border-[var(--menu-primary)]/20" priceClassName="mt-2 text-sm text-[var(--menu-primary)]" />
           </section>
         ))}
       </main>

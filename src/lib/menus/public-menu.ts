@@ -15,7 +15,8 @@ import { isPublicSlug } from "@/lib/businesses/slug";
 import type { Locale } from "@/lib/i18n/locales";
 
 import { appearanceFromRow, menuThemes, normalizeMenuTheme, type MenuAppearance, type MenuTheme } from "./appearance";
-import { isSafeMenuImagePath } from "./media";
+import { parseCategoryIcon, type CategoryIcon } from "./category-icons";
+import { isSafeCategoryImagePath, isSafeMenuImagePath, menuImageUrl } from "./media";
 import { dietaryLabels, type DietaryLabel } from "./schema";
 import { currencyExponent, formatMinor } from "./money";
 
@@ -54,6 +55,8 @@ export type PublicCategory = {
   nameAr: string | null;
   description: string | null;
   descriptionAr: string | null;
+  icon: CategoryIcon | null;
+  imageUrl: string | null;
   products: PublicProduct[];
 };
 
@@ -78,7 +81,7 @@ export type PublicMenu = {
 };
 
 export function publicMenuTag(slug: string) {
-  return `public-menu-v2:${slug}`;
+  return `public-menu-v3:${slug}`;
 }
 
 export function parseMenuTheme(value: unknown): MenuTheme | null {
@@ -193,6 +196,8 @@ type CategorySource = {
   name_ar?: unknown;
   description?: unknown;
   description_ar?: unknown;
+  icon?: unknown;
+  image_path?: unknown;
   sort_order?: unknown;
 };
 
@@ -256,7 +261,7 @@ export function assemblePublicMenu(input: {
   const rawType = typeof input.business.business_type === "string" ? input.business.business_type : "other";
   const businessType: BusinessType = businessTypes.find((type) => type === rawType) ?? "other";
   const categories = input.categories
-    .map(toCategory)
+    .map((category) => toCategory(category, input.supabaseUrl, input.businessId))
     .filter((category): category is SortableCategory => category !== null)
     .sort((left, right) => left.sortOrder - right.sortOrder);
 
@@ -305,12 +310,18 @@ export function assemblePublicMenu(input: {
   };
 }
 
-function toCategory(source: CategorySource): SortableCategory | null {
+function toCategory(source: CategorySource, supabaseUrl: string, businessId: string): SortableCategory | null {
   const id = textId(source.id);
   const name = typeof source.name === "string" ? source.name.trim() : "";
   if (!id || name.length === 0) {
     return null;
   }
+
+  const imagePath = typeof source.image_path === "string" ? source.image_path : null;
+  const imageUrl =
+    imagePath && isSafeCategoryImagePath(businessId, id, imagePath)
+      ? menuImageUrl(supabaseUrl, imagePath)
+      : null;
 
   return {
     id,
@@ -318,6 +329,8 @@ function toCategory(source: CategorySource): SortableCategory | null {
     nameAr: optionalText(source.name_ar),
     description: optionalText(source.description),
     descriptionAr: optionalText(source.description_ar),
+    icon: imageUrl ? null : parseCategoryIcon(source.icon),
+    imageUrl,
     products: [],
     sortOrder: numberOrZero(source.sort_order),
   };

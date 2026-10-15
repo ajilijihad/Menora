@@ -194,6 +194,8 @@ export type Database = {
           sort_order: number;
           is_active: boolean;
           is_published: boolean;
+          icon: string | null;
+          image_path: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -207,6 +209,8 @@ export type Database = {
           sort_order?: number;
           is_active?: boolean;
           is_published?: boolean;
+          icon?: string | null;
+          image_path?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -218,6 +222,8 @@ export type Database = {
           sort_order?: number;
           is_active?: boolean;
           is_published?: boolean;
+          icon?: string | null;
+          image_path?: string | null;
           updated_at?: string;
         };
         Relationships: [
