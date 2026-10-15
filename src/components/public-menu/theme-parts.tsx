@@ -125,20 +125,25 @@ export function CategoryScroller({
       <ul className={`${navListClass(navStyle)} px-4 py-3 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden`}>
         {categories.map((category) => {
           const active = activeId === category.id;
-          const tone = navStyle === "pills" ? itemClassName(active) : active ? "font-semibold" : "opacity-80";
+          const chip = navStyle !== "underline";
           return (
-            <li key={category.id} className={navStyle === "list" ? "min-w-0" : "shrink-0"}>
+            <li key={category.id} className={navStyle === "pills" ? "shrink-0" : "min-w-0"}>
               <a
                 href={`#category-${category.id}`}
-                className={`${navLinkClass(navStyle)} gap-2 ${tone}`}
-                style={active ? navLinkStyle(navStyle) : undefined}
+                className={
+                  chip
+                    ? `relative flex h-11 items-center gap-2.5 rounded-xl px-4 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--menu-secondary)] ${navStyle === "list" ? "w-full" : ""} ${active ? "ps-5 text-[var(--menu-primary)]" : itemClassName(false)}`
+                    : `${navLinkClass(navStyle)} gap-2.5 ${active ? "font-semibold" : "opacity-80"}`
+                }
+                style={active ? navLinkStyle(chip ? "pills" : navStyle) : undefined}
                 onClick={() => setPicked(category.id)}
               >
+                {chip && active ? <span aria-hidden="true" className="absolute start-1.5 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-[var(--menu-primary)]" /> : null}
                 <CategoryGlyph
                   icon={category.icon}
                   imageUrl={category.imageUrl}
-                  className="size-4 shrink-0"
-                  imageClassName="size-4 shrink-0 rounded-full object-cover"
+                  className="size-5 shrink-0"
+                  imageClassName="size-5 shrink-0 rounded-md object-cover"
                 />
                 <span dir="auto">{productName(locale, category)}</span>
               </a>

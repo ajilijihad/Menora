@@ -42,7 +42,7 @@ const fieldClassName =
 
 function pictureButtonClass(selected: boolean) {
   return `inline-flex h-10 items-center justify-center gap-2 rounded-xl border px-3 text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
-    selected ? "border-brand bg-brand/20 text-brand" : "border-line bg-surface text-muted hover:text-foreground"
+    selected ? "border-brand bg-brand/10 text-brand" : "border-line bg-surface text-muted hover:text-foreground"
   }`;
 }
 

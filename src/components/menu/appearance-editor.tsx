@@ -1,5 +1,6 @@
 "use client";
 
+import { Monitor, Smartphone } from "lucide-react";
 import { useActionState, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -339,18 +340,31 @@ export function AppearanceEditor({
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h2 id={titleId} className="text-lg font-semibold">{copy.preview}</h2>
           <div role="radiogroup" aria-label={copy.preview} className="flex gap-2">
-            {(["desktop", "mobile"] as const).map((mode) => (
-              <label key={mode} className="inline-flex h-10 items-center gap-2 rounded-full border border-zinc-300 px-3 text-sm dark:border-zinc-700">
-                <input
-                  type="radio"
-                  name="previewMode"
-                  value={mode}
-                  checked={previewMode === mode}
-                  onChange={() => setPreviewMode(mode)}
-                />
-                {mode === "desktop" ? copy.desktop : copy.mobile}
-              </label>
-            ))}
+            {(["desktop", "mobile"] as const).map((mode) => {
+              const selected = previewMode === mode;
+              return (
+                <label
+                  key={mode}
+                  className={
+                    selected
+                      ? "relative inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl bg-brand/10 ps-5 pe-4 text-sm font-medium text-brand"
+                      : "inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm text-muted"
+                  }
+                >
+                  {selected ? <span aria-hidden="true" className="absolute start-1.5 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-brand" /> : null}
+                  <input
+                    type="radio"
+                    name="previewMode"
+                    value={mode}
+                    checked={selected}
+                    onChange={() => setPreviewMode(mode)}
+                    className="sr-only"
+                  />
+                  {mode === "desktop" ? <Monitor className="size-4 shrink-0" aria-hidden="true" /> : <Smartphone className="size-4 shrink-0" aria-hidden="true" />}
+                  {mode === "desktop" ? copy.desktop : copy.mobile}
+                </label>
+              );
+            })}
           </div>
         </div>
         {usingSamples ? <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">{copy.sampleNote}</p> : null}

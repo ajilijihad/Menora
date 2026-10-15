@@ -331,12 +331,11 @@ export function navLinkClass(style: NavStyle): string {
     return `block rounded-sm px-1 py-1 text-sm underline-offset-4 hover:underline ${focus}`;
   }
 
-  return `inline-flex h-10 items-center rounded-full px-4 text-sm font-medium ${focus}`;
+  return `relative inline-flex h-11 items-center rounded-xl px-4 text-sm font-medium ${focus}`;
 }
 
 export function navLinkStyle(style: NavStyle, surface: "page" | "inverse" = "page"): CSSProperties {
   const mark = surface === "inverse" ? "var(--menu-on-primary)" : "var(--menu-primary)";
-  const ink = surface === "inverse" ? "var(--menu-primary)" : "var(--menu-on-primary)";
   if (style === "underline") {
     return { borderColor: mark };
   }
@@ -345,7 +344,10 @@ export function navLinkStyle(style: NavStyle, surface: "page" | "inverse" = "pag
     return {};
   }
 
-  return { backgroundColor: mark, color: ink };
+  return {
+    backgroundColor: "color-mix(in srgb, var(--menu-primary) 16%, white)",
+    color: mark,
+  };
 }
 
 function fontStack(font: FontChoice): string {
