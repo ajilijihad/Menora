@@ -79,7 +79,7 @@ async function SettingsContent({
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col">
+    <main className="flex-1 flex-col">
       {canEdit ? (
         <BusinessForm
           locale={locale}

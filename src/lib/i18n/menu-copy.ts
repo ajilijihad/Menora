@@ -46,9 +46,35 @@ export type MenuCopy = {
   emptyProductsDescription: string;
   noMatches: string;
   categoryTitle: string;
+  categoryIntro: string;
   categoryEditTitle: string;
+  categoryEditIntro: string;
+  createCategory: string;
+  namePlaceholder: string;
+  nameArPlaceholder: string;
+  descriptionPlaceholder: string;
+  descriptionArPlaceholder: string;
+  availableHint: string;
+  publishedHint: string;
   productTitle: string;
+  productIntro: string;
   productEditTitle: string;
+  productEditIntro: string;
+  createProduct: string;
+  productNamePlaceholder: string;
+  productNameArPlaceholder: string;
+  productDescriptionPlaceholder: string;
+  productDescriptionArPlaceholder: string;
+  compareHint: string;
+  productAvailableHint: string;
+  productStockHint: string;
+  productPublishedHint: string;
+  productFeaturedHint: string;
+  variantsHint: string;
+  addonsHint: string;
+  changeImage: string;
+  uploadImage: string;
+  productImageHint: string;
   fields: {
     name: string;
     nameAr: string;
@@ -269,10 +295,36 @@ export const menuCopyEn: MenuCopy = {
   emptyProductsTitle: "No products yet",
   emptyProductsDescription: "Add a product to this menu. Prices use the business currency.",
   noMatches: "No products match this search.",
-  categoryTitle: "New category",
+  categoryTitle: "Create category",
+  categoryIntro: "Add a new category to organize your menu items. You can add names and descriptions in both languages.",
   categoryEditTitle: "Edit category",
-  productTitle: "New product",
+  categoryEditIntro: "Update the names, descriptions, and visibility for this category.",
+  createCategory: "Create category",
+  namePlaceholder: "Enter category name in English",
+  nameArPlaceholder: "أدخل اسم الفئة بالعربية",
+  descriptionPlaceholder: "Enter a short description for this category in English...",
+  descriptionArPlaceholder: "أدخل وصفًا مختصرًا لهذه الفئة بالعربية...",
+  availableHint: "Show this category in your menu.",
+  publishedHint: "Make this category visible to customers.",
+  productTitle: "Create product",
+  productIntro: "Add a new product to your menu. You can add names, descriptions, prices, and more details in both languages.",
   productEditTitle: "Edit product",
+  productEditIntro: "Update this product's names, price, image, and menu details.",
+  createProduct: "Create product",
+  productNamePlaceholder: "Enter product name in English",
+  productNameArPlaceholder: "أدخل اسم المنتج بالعربية",
+  productDescriptionPlaceholder: "Enter a description for this product in English...",
+  productDescriptionArPlaceholder: "أدخل وصفًا للمنتج بالعربية...",
+  compareHint: "Optional. Show the original price for discounts.",
+  productAvailableHint: "Show this product in your menu.",
+  productStockHint: "Mark as out of stock.",
+  productPublishedHint: "Make this product visible to customers.",
+  productFeaturedHint: "Highlight this product in your menu.",
+  variantsHint: "Add different sizes, options, or variations for this product.",
+  addonsHint: "Add optional items that customers can choose with this product.",
+  changeImage: "Change image",
+  uploadImage: "Upload image",
+  productImageHint: "JPG, PNG, or WebP. Up to 1.5 MB.",
   fields: {
     name: "English name",
     nameAr: "Arabic name",
@@ -288,7 +340,7 @@ export const menuCopyEn: MenuCopy = {
     labels: "Dietary labels",
     variants: "Sizes and variants",
     addons: "Add-ons",
-    images: "Photos",
+    images: "Product image",
     activeOption: "Offered",
   },
   currencies,
@@ -377,10 +429,36 @@ export const menuCopyAr: MenuCopy = {
   emptyProductsTitle: "لا توجد منتجات بعد",
   emptyProductsDescription: "أضف منتجًا إلى هذه القائمة. تستخدم الأسعار عملة العمل.",
   noMatches: "لا توجد منتجات مطابقة لهذا البحث.",
-  categoryTitle: "تصنيف جديد",
+  categoryTitle: "إنشاء تصنيف",
+  categoryIntro: "أضف تصنيفًا جديدًا لتنظيم أصناف قائمتك. يمكنك إضافة الأسماء والأوصاف باللغتين.",
   categoryEditTitle: "تعديل التصنيف",
-  productTitle: "منتج جديد",
+  categoryEditIntro: "حدّث الأسماء والأوصاف وظهور هذا التصنيف.",
+  createCategory: "إنشاء تصنيف",
+  namePlaceholder: "Enter category name in English",
+  nameArPlaceholder: "أدخل اسم الفئة بالعربية",
+  descriptionPlaceholder: "Enter a short description for this category in English...",
+  descriptionArPlaceholder: "أدخل وصفًا مختصرًا لهذه الفئة بالعربية...",
+  availableHint: "أظهر هذا التصنيف في قائمتك.",
+  publishedHint: "اجعل هذا التصنيف ظاهرًا للزبائن.",
+  productTitle: "إنشاء منتج",
+  productIntro: "أضف منتجًا جديدًا إلى قائمتك. يمكنك إضافة الأسماء والأوصاف والأسعار وتفاصيل أخرى باللغتين.",
   productEditTitle: "تعديل المنتج",
+  productEditIntro: "حدّث أسماء هذا المنتج وسعره وصورته وتفاصيل القائمة.",
+  createProduct: "إنشاء منتج",
+  productNamePlaceholder: "Enter product name in English",
+  productNameArPlaceholder: "أدخل اسم المنتج بالعربية",
+  productDescriptionPlaceholder: "Enter a description for this product in English...",
+  productDescriptionArPlaceholder: "أدخل وصفًا للمنتج بالعربية...",
+  compareHint: "اختياري. أظهر السعر الأصلي للتخفيضات.",
+  productAvailableHint: "أظهر هذا المنتج في قائمتك.",
+  productStockHint: "علّمه كغير متوفر.",
+  productPublishedHint: "اجعل هذا المنتج ظاهرًا للزبائن.",
+  productFeaturedHint: "أبرز هذا المنتج في قائمتك.",
+  variantsHint: "أضف أحجامًا أو خيارات أو تنويعات لهذا المنتج.",
+  addonsHint: "أضف أصنافًا اختيارية يمكن للزبائن اختيارها مع هذا المنتج.",
+  changeImage: "تغيير الصورة",
+  uploadImage: "رفع صورة",
+  productImageHint: "JPG أو PNG أو WebP. حتى 1.5 ميغابايت.",
   fields: {
     name: "الاسم بالإنجليزية",
     nameAr: "الاسم بالعربية",
@@ -396,7 +474,7 @@ export const menuCopyAr: MenuCopy = {
     labels: "التصنيفات الغذائية",
     variants: "الأحجام والأنواع",
     addons: "الإضافات",
-    images: "الصور",
+    images: "صورة المنتج",
     activeOption: "معروض",
   },
   currencies: currenciesAr,

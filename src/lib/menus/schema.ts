@@ -88,11 +88,16 @@ export type ProductInput = {
   addons: PricedOption[];
 };
 
+export const categoryNameMax = 120;
+export const categoryDescriptionMax = 2000;
+export const productNameMax = 160;
+export const productDescriptionMax = 4000;
+
 const categorySchema = z.object({
-  name: z.string().trim().min(1).max(120),
-  nameAr: z.string().trim().min(1).max(120),
-  description: z.string().trim().max(2000).nullable(),
-  descriptionAr: z.string().trim().max(2000).nullable(),
+  name: z.string().trim().min(1).max(categoryNameMax),
+  nameAr: z.string().trim().min(1).max(categoryNameMax),
+  description: z.string().trim().max(categoryDescriptionMax).nullable(),
+  descriptionAr: z.string().trim().max(categoryDescriptionMax).nullable(),
   isActive: z.boolean(),
   isPublished: z.boolean(),
 });
@@ -107,10 +112,10 @@ const optionSchema = z.object({
 
 const productSchema = categorySchema.extend({
   categoryId: z.string(),
-  description: z.string().trim().max(4000).nullable(),
-  descriptionAr: z.string().trim().max(4000).nullable(),
-  name: z.string().trim().min(1).max(160),
-  nameAr: z.string().trim().min(1).max(160),
+  description: z.string().trim().max(productDescriptionMax).nullable(),
+  descriptionAr: z.string().trim().max(productDescriptionMax).nullable(),
+  name: z.string().trim().min(1).max(productNameMax),
+  nameAr: z.string().trim().min(1).max(productNameMax),
   priceCents: z.number().int().min(0).max(2_000_000_000),
   compareAtCents: z.number().int().min(0).max(2_000_000_000).nullable(),
   isFeatured: z.boolean(),

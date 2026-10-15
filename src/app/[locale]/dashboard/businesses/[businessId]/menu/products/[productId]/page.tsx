@@ -1,3 +1,4 @@
+import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -60,21 +61,24 @@ async function EditProductContent({
   const exponent = currencyExponent(currency) ?? 2;
 
   return (
-    <main className="flex flex-1 flex-col px-6 py-10">
-      <Link href={`/${locale}/dashboard/businesses/${business.id}/menu?tab=products`} className="text-sm font-medium underline-offset-4 hover:underline">
+    <main className="flex-1 flex-col">
+      <Link href={`/${locale}/dashboard/businesses/${business.id}/menu?tab=products`} className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-brand transition hover:text-brand-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+        <ArrowLeft className="size-4 rtl:rotate-180" aria-hidden="true" />
         {copy.back}
       </Link>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">{copy.productEditTitle}</h1>
+      <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">{copy.productEditTitle}</h1>
+      <p className="mt-1 max-w-2xl text-sm text-muted">{copy.productEditIntro}</p>
       {notice ? (
-        <div className="mt-6 max-w-3xl">
+        <div className="mt-6">
           <Notice tone={notice === "saved" || notice === "created" ? "success" : "error"}>{copy.messages[notice]}</Notice>
         </div>
       ) : null}
-      <div className="mt-8">
+      <div className="mt-6">
         <ProductForm
           locale={locale}
           copy={copy}
           businessId={business.id}
+          currency={currency}
           productId={product.id}
           categories={categories.map((category) => ({ id: category.id, name: category.name }))}
           initial={{

@@ -1,3 +1,4 @@
+import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -34,12 +35,14 @@ async function NewCategoryContent({ locale, businessId }: { locale: Locale; busi
   if (!business || !canEditMenu(business.role)) notFound();
   const copy = getDictionary(locale).menu;
   return (
-    <main className="flex flex-1 flex-col px-6 py-10">
-      <Link href={`/${locale}/dashboard/businesses/${business.id}/menu`} className="text-sm font-medium underline-offset-4 hover:underline">
+    <main className="flex-1 flex-col">
+      <Link href={`/${locale}/dashboard/businesses/${business.id}/menu`} className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-brand transition hover:text-brand-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+        <ArrowLeft className="size-4 rtl:rotate-180" aria-hidden="true" />
         {copy.back}
       </Link>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">{copy.categoryTitle}</h1>
-      <div className="mt-8">
+      <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">{copy.categoryTitle}</h1>
+      <p className="mt-1 max-w-2xl text-sm text-muted">{copy.categoryIntro}</p>
+      <div className="mt-6">
         <CategoryForm
           locale={locale}
           copy={copy}

@@ -1,3 +1,4 @@
+import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -10,7 +11,7 @@ import { canEditMenu } from "@/lib/businesses/access";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/locales";
 import { getMyBusiness } from "@/modules/businesses/queries";
-import { listCategories } from "@/modules/menus/queries";
+import { businessCurrency, listCategories } from "@/modules/menus/queries";
 
 type PageProps = { params: Promise<{ locale: string; businessId: string }> };
 
@@ -36,26 +37,32 @@ async function NewProductContent({ locale, businessId }: { locale: Locale; busin
   if (!business || !canEditMenu(business.role)) notFound();
   const copy = getDictionary(locale).menu;
   const categories = await listCategories(business.id);
+  const currency = await businessCurrency(business.id);
   const menuHref = `/${locale}/dashboard/businesses/${business.id}/menu`;
 
   return (
-    <main className="flex flex-1 flex-col px-6 py-10">
-      <Link href={`${menuHref}?tab=products`} className="text-sm font-medium underline-offset-4 hover:underline">{copy.back}</Link>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">{copy.productTitle}</h1>
+    <main className="flex-1 flex-col">
+      <Link href={`${menuHref}?tab=products`} className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-brand transition hover:text-brand-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+        <ArrowLeft className="size-4 rtl:rotate-180" aria-hidden="true" />
+        {copy.back}
+      </Link>
+      <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">{copy.productTitle}</h1>
+      <p className="mt-1 max-w-2xl text-sm text-muted">{copy.productIntro}</p>
       {categories.length === 0 ? (
-        <div className="mt-8 max-w-xl rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+        <div className="mt-6 max-w-xl rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)]">
           <h2 className="font-medium">{copy.emptyCategoriesTitle}</h2>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{copy.emptyCategoriesDescription}</p>
+          <p className="mt-2 text-sm text-muted">{copy.emptyCategoriesDescription}</p>
           <Link href={`${menuHref}/categories/new`} className={`${statusActionClassName} mt-4`}>
             {copy.addCategory}
           </Link>
         </div>
       ) : (
-        <div className="mt-8">
+        <div className="mt-6">
           <ProductForm
             locale={locale}
             copy={copy}
             businessId={business.id}
+            currency={currency}
             categories={categories.map((category) => ({ id: category.id, name: category.name }))}
             initial={{
               categoryId: categories[0]?.id ?? "",
