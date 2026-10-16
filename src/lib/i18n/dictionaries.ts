@@ -119,6 +119,13 @@ export type Dictionary = {
   qr: QrCopy;
   billing: BillingCopy;
   insights: InsightsCopy;
+  calendar: {
+    clear: string;
+    today: string;
+    previousMonth: string;
+    nextMonth: string;
+    chooseMonth: string;
+  };
 };
 
 const en = {
@@ -256,6 +263,13 @@ const en = {
   qr: qrCopyEn,
   billing: billingCopyEn,
   insights: insightsCopyEn,
+  calendar: {
+    clear: "Clear",
+    today: "Today",
+    previousMonth: "Previous month",
+    nextMonth: "Next month",
+    chooseMonth: "Choose month",
+  },
 } satisfies Dictionary;
 
 const ar = {
@@ -393,6 +407,13 @@ const ar = {
   qr: qrCopyAr,
   billing: billingCopyAr,
   insights: insightsCopyAr,
+  calendar: {
+    clear: "مسح",
+    today: "اليوم",
+    previousMonth: "الشهر السابق",
+    nextMonth: "الشهر التالي",
+    chooseMonth: "اختيار الشهر",
+  },
 } satisfies Dictionary;
 
 const dictionaries: Record<Locale, Dictionary> = { en, ar };

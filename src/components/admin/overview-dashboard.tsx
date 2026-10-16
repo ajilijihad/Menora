@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 
 import { DailyChart } from "@/components/analytics/daily-chart";
+import { DateRangePicker, type CalendarLabels } from "@/components/ui/date-range-picker";
 import { DonutChart } from "@/components/analytics/donut-chart";
 import { Sparkline } from "@/components/analytics/sparkline";
 import { adminWhen } from "@/components/admin/frame";
@@ -40,11 +41,15 @@ export function OverviewDashboard({
   copy,
   statuses,
   overview,
+  calendar,
+  today,
 }: {
   locale: Locale;
   copy: AdminCopy;
   statuses: StatusLabels;
   overview: AdminOverview;
+  calendar: CalendarLabels;
+  today: string;
 }) {
   const number = new Intl.NumberFormat(locale);
   const rangeLabel = formatRange(overview.from, overview.to, locale);
@@ -98,17 +103,20 @@ export function OverviewDashboard({
             ) : null}
           </div>
           <form action={`/${locale}/admin`} className="flex flex-wrap items-end gap-2">
-            <label className="flex flex-col gap-1 text-xs font-medium text-muted">
-              {copy.from}
-              <input type="date" name="from" defaultValue={overview.from} className="h-10 rounded-xl border border-line bg-surface px-2 text-sm text-foreground" />
-            </label>
-            <label className="flex flex-col gap-1 text-xs font-medium text-muted">
-              {copy.to}
-              <input type="date" name="to" defaultValue={overview.to} className="h-10 rounded-xl border border-line bg-surface px-2 text-sm text-foreground" />
-            </label>
+            <DateRangePicker
+              key={`${overview.from}:${overview.to}`}
+              locale={locale}
+              fromLabel={copy.from}
+              toLabel={copy.to}
+              from={overview.from}
+              to={overview.to}
+              today={today}
+              applyLabel={copy.apply}
+              labels={calendar}
+            />
             <button
               type="submit"
-              className="h-10 rounded-xl border border-line bg-surface px-3 text-sm font-medium hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="h-11 rounded-xl bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
               {copy.apply}
             </button>

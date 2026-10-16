@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { RevenueChart } from "@/components/admin/revenue-chart";
+import { DateRangePicker, type CalendarLabels } from "@/components/ui/date-range-picker";
 import { signedAdminMoney, type AdminPreset } from "@/lib/admin/overview";
 import { inclusiveDays, sharePercent } from "@/lib/analytics/present";
 import type { AdminCopy } from "@/lib/i18n/admin-copy";
@@ -164,6 +165,7 @@ export function FinanceFilters({
   from,
   to,
   today,
+  calendar,
 }: {
   copy: Studio;
   locale: Locale;
@@ -171,6 +173,7 @@ export function FinanceFilters({
   from: string;
   to: string;
   today: string;
+  calendar: CalendarLabels;
 }) {
   const base = `/${locale}/admin/analytics`;
   return (
@@ -192,19 +195,21 @@ export function FinanceFilters({
           );
         })}
       </div>
-      <form className="flex flex-wrap items-center gap-2" method="get">
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface px-3 py-1">
-          <label className="flex items-center gap-2 text-sm">
-            <span className="sr-only">{copy.from}</span>
-            <input className="h-9 bg-transparent text-sm text-foreground outline-none [color-scheme:inherit]" type="date" name="from" defaultValue={from} max={today} required />
-          </label>
-          <span className="text-muted" aria-hidden="true">–</span>
-          <label className="flex items-center gap-2 text-sm">
-            <span className="sr-only">{copy.to}</span>
-            <input className="h-9 bg-transparent text-sm text-foreground outline-none [color-scheme:inherit]" type="date" name="to" defaultValue={to} max={today} required />
-          </label>
-        </div>
-        <button className="h-10 rounded-xl bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-hover" type="submit">{copy.apply}</button>
+      <form className="flex flex-wrap items-end gap-2" method="get">
+        <DateRangePicker
+          key={`${from}:${to}`}
+          locale={locale}
+          fromLabel={copy.from}
+          toLabel={copy.to}
+          from={from}
+          to={to}
+          today={today}
+          max={today}
+          required
+          applyLabel={copy.apply}
+          labels={calendar}
+        />
+        <button className="h-11 rounded-xl bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand" type="submit">{copy.apply}</button>
       </form>
     </div>
   );

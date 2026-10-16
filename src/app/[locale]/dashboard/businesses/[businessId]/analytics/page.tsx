@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowDownRight, ArrowUpRight, CalendarDays, Download, Eye, Package } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Download, Eye, Package } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
@@ -7,6 +7,7 @@ import { Suspense, type ReactNode } from "react";
 import { DailyChart } from "@/components/analytics/daily-chart";
 import { DonutChart } from "@/components/analytics/donut-chart";
 import { Sparkline } from "@/components/analytics/sparkline";
+import { DateRangePicker, type CalendarLabels } from "@/components/ui/date-range-picker";
 import { LoadingState } from "@/components/states/loading-state";
 import { StatusPanel } from "@/components/states/status-panel";
 import { inclusiveDays, periodChange, previousWindow, sharePercent } from "@/lib/analytics/present";
@@ -39,8 +40,6 @@ const sourceColors: Record<(typeof sourceOrder)[number], string> = {
 };
 
 const cardClassName = "rounded-3xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]";
-const dateInputClassName =
-  "h-10 bg-transparent text-sm text-foreground outline-none [color-scheme:inherit]";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
@@ -120,6 +119,7 @@ async function AnalyticsContent({
         <main className="flex flex-col gap-5">
           <Header
             copy={copy}
+            calendar={dict.calendar}
             locale={locale}
             businessId={businessId}
             from={requestedFrom && /^\d{4}-\d{2}-\d{2}$/.test(requestedFrom) ? requestedFrom : result.visibleFrom}
@@ -165,6 +165,7 @@ async function AnalyticsContent({
     <main className="flex flex-col gap-5">
       <Header
         copy={copy}
+        calendar={dict.calendar}
         locale={locale}
         businessId={businessId}
         from={result.pageFrom}
@@ -257,6 +258,7 @@ async function AnalyticsContent({
 
 function Header({
   copy,
+  calendar,
   locale,
   businessId,
   from,
@@ -267,6 +269,7 @@ function Header({
   invalid,
 }: {
   copy: InsightsCopy;
+  calendar: CalendarLabels;
   locale: Locale;
   businessId: string;
   from: string;
@@ -290,20 +293,21 @@ function Header({
         <p className="mt-1 text-xs text-muted">{copy.privacy}</p>
       </div>
       <div className="flex flex-col items-stretch gap-2 sm:items-end">
-        <form key={`${from}:${to}`} className="flex flex-wrap items-center gap-2" method="get">
-          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-surface px-3 py-1 shadow-[var(--shadow-card)]">
-            <CalendarDays className="size-4 text-muted" aria-hidden="true" />
-            <label className="flex items-center gap-2 text-sm">
-              <span className="sr-only">{copy.from}</span>
-              <input className={dateInputClassName} type="date" name="from" defaultValue={from} min={visibleFrom} max={today} required />
-            </label>
-            <span className="text-muted" aria-hidden="true">–</span>
-            <label className="flex items-center gap-2 text-sm">
-              <span className="sr-only">{copy.to}</span>
-              <input className={dateInputClassName} type="date" name="to" defaultValue={to} min={visibleFrom} max={today} required />
-            </label>
-          </div>
-          <button className="h-11 rounded-xl bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-hover" type="submit">
+        <form key={`${from}:${to}`} className="flex flex-wrap items-end gap-2" method="get">
+          <DateRangePicker
+            locale={locale}
+            fromLabel={copy.from}
+            toLabel={copy.to}
+            from={from}
+            to={to}
+            today={today}
+            min={visibleFrom}
+            max={today}
+            required
+            applyLabel={copy.apply}
+            labels={calendar}
+          />
+          <button className="h-11 rounded-xl bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand" type="submit">
             {copy.apply}
           </button>
         </form>

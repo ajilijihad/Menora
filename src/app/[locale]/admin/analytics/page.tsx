@@ -74,7 +74,7 @@ async function AnalyticsContent({
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">{studio.description}</p>
           <p className="mt-2 max-w-2xl text-xs leading-5 text-muted">{studio.note}</p>
         </div>
-        <FinanceFilters copy={studio} locale={locale as Locale} preset={result.preset} from={result.from} to={result.to} today={utcDay(now)} />
+        <FinanceFilters copy={studio} locale={locale as Locale} preset={result.preset} from={result.from} to={result.to} today={utcDay(now)} calendar={dict.calendar} />
       </header>
       <FinanceDashboard copy={studio} locale={locale} report={result} />
     </main>

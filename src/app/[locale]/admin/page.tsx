@@ -7,6 +7,7 @@ import { AdminNotice } from "@/components/admin/frame";
 import { OverviewDashboard } from "@/components/admin/overview-dashboard";
 import { LoadingState } from "@/components/states/loading-state";
 import { StatusPanel } from "@/components/states/status-panel";
+import { utcDay } from "@/lib/analytics/collect";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale } from "@/lib/i18n/locales";
 import { loadAdminOverview } from "@/modules/admin/queries";
@@ -51,11 +52,12 @@ async function Overview({
   const dict = getDictionary(locale);
   const query = await searchParams;
   const notice = first(query.notice);
+  const now = new Date();
   const overview = await loadAdminOverview({
     range: first(query.range),
     from: first(query.from),
     to: first(query.to),
-    now: new Date(),
+    now,
   });
   if ("denied" in overview) {
     return <StatusPanel title={dict.admin.deniedTitle} description={dict.admin.deniedDescription} />;
@@ -71,7 +73,7 @@ async function Overview({
           <AdminNotice copy={dict.admin} notice={notice} />
         </div>
       ) : null}
-      <OverviewDashboard locale={locale} copy={dict.admin} statuses={dict.billing.statuses} overview={overview} />
+      <OverviewDashboard locale={locale} copy={dict.admin} statuses={dict.billing.statuses} overview={overview} calendar={dict.calendar} today={utcDay(now)} />
     </>
   );
 }
