@@ -11,6 +11,8 @@ import { Select } from "@/components/ui/select";
 import { LoadingState } from "@/components/states/loading-state";
 import { StatusPanel } from "@/components/states/status-panel";
 import { formatAdminMoney } from "@/lib/admin/overview";
+import { profileAvatarUrl } from "@/lib/auth/avatar-url";
+import { businessMediaUrl } from "@/lib/businesses/media-url";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/locales";
 import { grantPlanFormAction } from "@/modules/admin/actions";
@@ -150,9 +152,7 @@ async function Users({ locale, searchParams }: { locale: Locale; searchParams: P
                       >
                         <td className="px-5 py-4">
                           <span className="inline-flex items-center gap-2.5 font-medium text-foreground">
-                            <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
-                              <UserRound className="size-4" aria-hidden="true" />
-                            </span>
+                            <Avatar url={profileAvatarUrl(row.avatar_path)} />
                             {name}
                           </span>
                         </td>
@@ -161,9 +161,12 @@ async function Users({ locale, searchParams }: { locale: Locale; searchParams: P
                           {row.businesses.length === 0 ? <span className="text-muted">{copy.noBusiness}</span> : (
                             <ul className="flex flex-col gap-2">
                               {row.businesses.map((item) => (
-                                <li key={item.id}>
-                                  <p className="font-medium text-foreground">{item.name}</p>
-                                  <p className="text-xs text-muted">{planSummary(item, copy, dict.billing.statuses)}</p>
+                                <li key={item.id} className="flex items-center gap-2.5">
+                                  <BusinessMark url={businessMediaUrl(item.logoPath)} />
+                                  <span className="min-w-0">
+                                    <p className="font-medium text-foreground">{item.name}</p>
+                                    <p className="text-xs text-muted">{planSummary(item, copy, dict.billing.statuses)}</p>
+                                  </span>
                                 </li>
                               ))}
                             </ul>
@@ -247,6 +250,24 @@ function planSummary(
   return business.status ? `${name} · ${statuses[business.status]}` : name;
 }
 
+function Avatar({ url }: { url: string | null }) {
+  if (url) {
+    return <img src={url} alt="" className="size-8 shrink-0 rounded-full object-cover" />;
+  }
+  return (
+    <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
+      <UserRound className="size-4" aria-hidden="true" />
+    </span>
+  );
+}
+
+function BusinessMark({ url }: { url: string | null }) {
+  if (!url) {
+    return null;
+  }
+  return <img src={url} alt="" className="size-8 shrink-0 rounded-full object-cover" />;
+}
+
 function RoleBadge({ appointed, label }: { appointed: boolean; label: string }) {
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${appointed ? "bg-amber-500/15 text-amber-700 dark:text-amber-300" : "bg-sky-500/10 text-sky-700 dark:text-sky-300"}`}>
@@ -284,12 +305,13 @@ function UserDetails({
   const name = user.full_name || copy.empty;
   const email = user.email || copy.empty;
   const planLabel = business ? planSummary(business, copy, statuses) : copy.noPlan;
+  const avatarUrl = profileAvatarUrl(user.avatar_path);
 
   return (
     <div>
       <div className="flex items-start gap-3 border-b border-line px-5 py-4">
-        <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
-          <UserRound className="size-5" aria-hidden="true" />
+        <span className="inline-flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand/10 text-brand">
+          {avatarUrl ? <img src={avatarUrl} alt="" className="size-12 object-cover" /> : <UserRound className="size-5" aria-hidden="true" />}
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold text-foreground">{name}</p>
@@ -305,10 +327,13 @@ function UserDetails({
 
       <div className="flex flex-col gap-4 p-5">
         {business ? (
-          <div className="rounded-xl bg-surface-muted px-4 py-3">
-            <p className="text-xs font-medium text-muted">{copy.columns.plan}</p>
-            <p className="mt-1 font-medium text-foreground">{business.name}</p>
-            <p className="text-sm text-muted">{planLabel}</p>
+          <div className="flex items-center gap-3 rounded-xl bg-surface-muted px-4 py-3">
+            <BusinessMark url={businessMediaUrl(business.logoPath)} />
+            <span className="min-w-0">
+              <p className="text-xs font-medium text-muted">{copy.columns.plan}</p>
+              <p className="mt-1 font-medium text-foreground">{business.name}</p>
+              <p className="text-sm text-muted">{planLabel}</p>
+            </span>
           </div>
         ) : (
           <p className="rounded-xl bg-surface-muted px-4 py-3 text-sm text-muted">{copy.noBusiness}</p>
