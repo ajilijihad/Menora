@@ -67,15 +67,12 @@ export function SiteHeaderBar({
             ))} 
           </nav>
           <div className="ms-auto flex items-center gap-2">
-           
-            <span className="hidden h-6 w-px bg-line xl:block" aria-hidden="true" />
             <Link
               href={switchedPath}
               className="inline-flex h-10 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             >
               <Globe className="size-4 text-muted" aria-hidden="true" />
               <span>{languageLabel}</span>
-              <ChevronDown className="size-3.5 text-muted" aria-hidden="true" />
             </Link>
             {logoutLabel ? <LogoutButton locale={locale} label={logoutLabel} /> : null}
           </div>
