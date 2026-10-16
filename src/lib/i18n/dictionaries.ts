@@ -53,6 +53,8 @@ export type Dictionary = {
     emailStatus: string;
     verified: string;
     unverified: string;
+    changePicture: string;
+    removePicture: string;
     name: string;
     email: string;
     password: string;
@@ -162,6 +164,8 @@ const en = {
     emailStatus: "Email status",
     verified: "Verified",
     unverified: "Unverified",
+    changePicture: "Change picture",
+    removePicture: "Remove picture",
     name: "Name",
     email: "Email",
     password: "Password",
@@ -224,7 +228,10 @@ const en = {
     auth_failed: "We could not complete that request. Try again.",
     profile_failed: "We could not save your profile.",
     profile_missing: "Your profile is not available yet.",
-    profile_saved: "Your name was saved.",
+    profile_saved: "Your profile was saved.",
+    image_type: "Use a JPEG, PNG, or WebP image.",
+    image_too_large: "Use an image of 1.5 MB or less.",
+    image_failed: "We could not save that picture.",
     verify_failed: "That confirmation link is invalid or has expired.",
     session_expired: "This reset link has expired. Request a new one.",
     password_updated: "Your password was updated.",
@@ -294,6 +301,8 @@ const ar = {
     emailStatus: "حالة البريد",
     verified: "موثّق",
     unverified: "غير موثّق",
+    changePicture: "تغيير الصورة",
+    removePicture: "إزالة الصورة",
     name: "الاسم",
     email: "البريد الإلكتروني",
     password: "كلمة المرور",
@@ -356,7 +365,10 @@ const ar = {
     auth_failed: "تعذر إكمال الطلب. حاول مرة أخرى.",
     profile_failed: "تعذر حفظ الملف الشخصي.",
     profile_missing: "الملف الشخصي غير متاح بعد.",
-    profile_saved: "تم حفظ الاسم.",
+    profile_saved: "تم حفظ الملف الشخصي.",
+    image_type: "استخدم صورة JPEG أو PNG أو WebP.",
+    image_too_large: "استخدم صورة بحجم 1.5 ميغابايت أو أقل.",
+    image_failed: "تعذر حفظ الصورة.",
     verify_failed: "رابط التأكيد غير صالح أو انتهت صلاحيته.",
     session_expired: "انتهت صلاحية رابط إعادة التعيين. اطلب رابطًا جديدًا.",
     password_updated: "تم تحديث كلمة المرور.",

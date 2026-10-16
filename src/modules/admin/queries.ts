@@ -372,7 +372,7 @@ export async function loadUsers(input: { q?: string; page?: string }) {
   const term = adminSearch(input.q);
   const page = adminPage(input.page);
   const range = pageRange(page);
-  let query = access.supabase.from("profiles").select("id, email, full_name, created_at", { count: "exact" });
+  let query = access.supabase.from("profiles").select("id, email, full_name, avatar_path, created_at", { count: "exact" });
   if (term) {
     query = query.or(orIlike(["email", "full_name"], term));
   }
@@ -390,7 +390,7 @@ export async function loadUsers(input: { q?: string; page?: string }) {
   const appointedIds = new Set((appointed.data ?? []).map((row) => row.user_id));
   const businesses = ids.length === 0
     ? { data: [], error: null }
-    : await access.supabase.from("businesses").select("id, name, owner_id").in("owner_id", ids);
+    : await access.supabase.from("businesses").select("id, name, owner_id, logo_path").in("owner_id", ids);
   if (businesses.error) {
     return { failed: true as const };
   }
@@ -413,6 +413,7 @@ export async function loadUsers(input: { q?: string; page?: string }) {
   const businessesByOwner = new Map<string, Array<{
     id: string;
     name: string;
+    logoPath: string | null;
     planId: string | null;
     planName: string | null;
     planAmount: number | null;
@@ -428,6 +429,7 @@ export async function loadUsers(input: { q?: string; page?: string }) {
     const entry = {
       id: business.id,
       name: business.name,
+      logoPath: business.logo_path,
       planId: plan?.id ?? null,
       planName: plan?.name ?? null,
       planAmount: plan?.amount_cents ?? null,

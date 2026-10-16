@@ -7,7 +7,9 @@ import { redirect } from "next/navigation";
 import { clientIpFromForwarded } from "@/lib/auth/ip";
 import { isObfuscatedExistingUser, mapAuthError, publicForgotPasswordResult } from "@/lib/auth/errors";
 import { idleAuthState, type AuthFormState } from "@/lib/auth/form-state";
+import { buildAvatarPath, isSafeAvatarPath, profileMediaBucket } from "@/lib/auth/avatar";
 import { profileUpdatePayload, signUpOptions } from "@/lib/auth/metadata";
+import { imageExtension, maxImageBytes } from "@/lib/businesses/media";
 import { sendWelcomeEmail } from "@/modules/email/account";
 import type { MessageCode } from "@/lib/auth/messages";
 import { authConfirmRedirect, safeNextPath } from "@/lib/auth/paths";
@@ -62,6 +64,90 @@ async function sessionClient() {
 
     throw error;
   }
+}
+
+type AvatarChoice =
+  | { kind: "keep" }
+  | { kind: "remove" }
+  | { kind: "replace"; file: File }
+  | { kind: "invalid"; message: MessageCode };
+
+function avatarChoice(entry: FormDataEntryValue | null, remove: boolean): AvatarChoice {
+  const file = entry instanceof File && entry.size > 0 ? entry : null;
+  if (!file) {
+    return remove ? { kind: "remove" } : { kind: "keep" };
+  }
+  if (file.size > maxImageBytes) {
+    return { kind: "invalid", message: "image_too_large" };
+  }
+  if (!imageExtension(file.type)) {
+    return { kind: "invalid", message: "image_type" };
+  }
+  return { kind: "replace", file };
+}
+
+async function removeAvatarObject(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  userId: string,
+  path: string | null,
+) {
+  if (!path || !isSafeAvatarPath(userId, path)) {
+    return;
+  }
+  await supabase.storage.from(profileMediaBucket).remove([path]);
+}
+
+async function storeAvatar(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  userId: string,
+  choice: AvatarChoice,
+  previousPath: string | null,
+): Promise<MessageCode | null> {
+  if (choice.kind === "invalid") {
+    return choice.message;
+  }
+  if (choice.kind === "keep") {
+    return null;
+  }
+  if (choice.kind === "remove") {
+    const cleared = await supabase.from("profiles").update({ avatar_path: null }).eq("id", userId);
+    if (cleared.error) {
+      return "image_failed";
+    }
+    await removeAvatarObject(supabase, userId, previousPath);
+    return null;
+  }
+
+  const extension = imageExtension(choice.file.type);
+  if (!extension) {
+    return "image_type";
+  }
+  const path = buildAvatarPath(userId, extension, crypto.randomUUID());
+  if (!isSafeAvatarPath(userId, path)) {
+    return "image_failed";
+  }
+  const bytes = new Uint8Array(await choice.file.arrayBuffer());
+  if (bytes.byteLength === 0 || bytes.byteLength > maxImageBytes) {
+    return bytes.byteLength > maxImageBytes ? "image_too_large" : "image_failed";
+  }
+  const uploaded = await supabase.storage.from(profileMediaBucket).upload(path, new Blob([bytes], { type: choice.file.type }), {
+    contentType: choice.file.type,
+    upsert: false,
+  });
+  if (uploaded.error) {
+    console.error(`profile image upload failed: ${uploaded.error.message}`);
+    return "image_failed";
+  }
+  const saved = await supabase.from("profiles").update({ avatar_path: path }).eq("id", userId);
+  if (saved.error) {
+    console.error(`profile image record failed: ${saved.error.message}`);
+    await removeAvatarObject(supabase, userId, path);
+    return "image_failed";
+  }
+  if (previousPath && previousPath !== path) {
+    await removeAvatarObject(supabase, userId, previousPath);
+  }
+  return null;
 }
 
 export async function registerAction(
@@ -295,6 +381,10 @@ export async function updateProfileAction(
   if (!parsed.ok) {
     return { status: "error", fieldErrors: parsed.fieldErrors, values };
   }
+  const picture = avatarChoice(formData.get("avatar"), formData.get("removeAvatar") === "1");
+  if (picture.kind === "invalid") {
+    return failure(picture.message, values);
+  }
 
   const limit = authRateLimiter.consume(
     `profile:${await requestIp()}`,
@@ -336,7 +426,16 @@ export async function updateProfileAction(
     console.error("Unable to sync the profile name to the auth account.");
   }
 
-  revalidatePath(`/${locale}/dashboard`);
+  const currentAvatar = await supabase.from("profiles").select("avatar_path").eq("id", user.id).maybeSingle();
+  if (currentAvatar.error) {
+    return failure("image_failed", values);
+  }
+  const pictureError = await storeAvatar(supabase, user.id, picture, currentAvatar.data?.avatar_path ?? null);
+  if (pictureError) {
+    return failure(pictureError, values);
+  }
+
+  revalidatePath(`/${locale}/dashboard`, "layout");
   revalidatePath(`/${locale}/dashboard/profile`);
 
   return { status: "success", message: "profile_saved", values };

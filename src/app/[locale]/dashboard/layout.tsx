@@ -6,6 +6,7 @@ import { DashboardFrame } from "@/components/dashboard/dashboard-frame";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { DashboardTopbar } from "@/components/dashboard/dashboard-topbar";
 import { canEditBusiness } from "@/lib/businesses/access";
+import { profileAvatarUrl } from "@/lib/auth/avatar-url";
 import { businessMediaUrl } from "@/lib/businesses/media-url";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/locales";
@@ -71,6 +72,7 @@ const loadDashboardChrome = cache(async function loadDashboardChrome(locale: Loc
   return {
     dict,
     displayName,
+    avatarUrl: profileAvatarUrl(profile?.avatar_path ?? null),
     isAdmin,
     businesses: businesses.map((business) => ({
       id: business.id,
@@ -108,6 +110,7 @@ async function DashboardTopbarSlot({ locale }: { locale: Locale }) {
       logoutLabel={dict.nav.logout}
       languageLabel={dict.language.switchTo}
       displayName={chrome.displayName}
+      avatarUrl={chrome.avatarUrl}
       isAdmin={chrome.isAdmin}
       businesses={chrome.businesses}
       selectorLabel={dict.business.selectorLabel}

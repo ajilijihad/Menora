@@ -1,11 +1,12 @@
 "use client";
 
 import { Camera, Info, Lock, Mail, Save, UserRound } from "lucide-react";
-import { useActionState } from "react";
+import { startTransition, useActionState, useRef, useState } from "react";
 
 import { idleAuthState } from "@/lib/auth/form-state";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/locales";
+import { prepareMenuImage } from "@/components/menu/prepare-image";
 import { updateProfileAction } from "@/modules/auth/actions";
 
 import { Notice } from "./notice";
@@ -17,25 +18,47 @@ type ProfileFormProps = {
   email: string;
   roleLabel: string;
   emailConfirmed: boolean;
+  avatarUrl: string | null;
 };
 
 const fieldClassName =
   "h-11 w-full rounded-xl border border-line bg-surface ps-10 pe-3.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted focus:border-brand focus:ring-2 focus:ring-brand/15";
 
-export function ProfileForm({ locale, copy, name, email, roleLabel, emailConfirmed }: ProfileFormProps) {
+export function ProfileForm({ locale, copy, name, email, roleLabel, emailConfirmed, avatarUrl }: ProfileFormProps) {
   const [state, action, pending] = useActionState(updateProfileAction, idleAuthState);
+  const [preparing, setPreparing] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [removePicture, setRemovePicture] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const savedName = name.trim();
   const displayName = savedName || email;
   const initial = displayName ? Array.from(displayName)[0] ?? "" : "";
   const nameError = state.fieldErrors?.name ? copy.messages[state.fieldErrors.name] : undefined;
+  const shownPicture = preview ?? (removePicture ? null : avatarUrl);
+  const busy = pending || preparing;
+
+  async function submit(formData: FormData) {
+    const file = formData.get("avatar");
+    if (file instanceof File && file.size > 0) {
+      setPreparing(true);
+      try {
+        formData.set("avatar", await prepareMenuImage(file));
+      } finally {
+        setPreparing(false);
+      }
+    }
+    startTransition(() => {
+      action(formData);
+    });
+  }
 
   return (
     <form
       key={`${state.status}:${state.message ?? ""}:${state.fieldErrors?.name ?? ""}`}
-      action={action}
+      action={submit}
       className="overflow-hidden rounded-3xl border border-line bg-surface shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
       noValidate
-      aria-busy={pending}
+      aria-busy={busy}
     >
       <input type="hidden" name="locale" value={locale} />
       {state.status === "success" && state.message ? (
@@ -51,15 +74,56 @@ export function ProfileForm({ locale, copy, name, email, roleLabel, emailConfirm
       <div className="grid lg:grid-cols-[17.5rem_minmax(0,1fr)]">
         <aside className="flex flex-col items-center bg-[#fff7f2] px-6 py-8 text-center dark:bg-brand/10 lg:border-e lg:border-brand/10">
           <span className="relative">
-            <span className="inline-flex size-20 items-center justify-center rounded-full bg-brand text-2xl font-semibold text-white" aria-hidden="true">
-              {initial}
-            </span>
-            <span className="absolute -bottom-0.5 -end-0.5 inline-flex size-7 items-center justify-center rounded-full border border-[#ffd7c4] bg-white text-brand shadow-sm dark:border-brand/30 dark:bg-surface">
+            {shownPicture ? (
+              <img src={shownPicture} alt="" className="size-20 rounded-full object-cover" />
+            ) : (
+              <span className="inline-flex size-20 items-center justify-center rounded-full bg-brand text-2xl font-semibold text-white" aria-hidden="true">
+                {initial}
+              </span>
+            )}
+            <label className="absolute -bottom-0.5 -end-0.5 inline-flex size-7 cursor-pointer items-center justify-center rounded-full border border-[#ffd7c4] bg-white text-brand shadow-sm dark:border-brand/30 dark:bg-surface">
               <Camera className="size-3.5" aria-hidden="true" />
-            </span>
+              <span className="sr-only">{copy.auth.changePicture}</span>
+              <input
+                ref={fileRef}
+                name="avatar"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  setRemovePicture(false);
+                  setPreview((current) => {
+                    if (current) {
+                      URL.revokeObjectURL(current);
+                    }
+                    return file ? URL.createObjectURL(file) : null;
+                  });
+                }}
+              />
+            </label>
           </span>
           <p className="mt-4 text-lg font-semibold text-foreground">{displayName}</p>
           <span className="mt-2 inline-flex rounded-full bg-[#ffe4d4] px-2.5 py-0.5 text-xs font-medium text-brand dark:bg-brand/15">{roleLabel}</span>
+          {shownPicture ? (
+            <button
+              type="button"
+              className="mt-3 text-xs font-medium text-muted underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              onClick={() => {
+                if (preview) {
+                  URL.revokeObjectURL(preview);
+                }
+                if (fileRef.current) {
+                  fileRef.current.value = "";
+                }
+                setPreview(null);
+                setRemovePicture(true);
+              }}
+            >
+              {copy.auth.removePicture}
+            </button>
+          ) : null}
+          {removePicture && !preview ? <input type="hidden" name="removeAvatar" value="1" /> : null}
           <div className="mt-6 flex w-full flex-col gap-4 border-t border-brand/15 pt-5 text-start">
             <div>
               <p className="flex items-center gap-2 text-xs font-medium text-muted">
@@ -112,11 +176,11 @@ export function ProfileForm({ locale, copy, name, email, roleLabel, emailConfirm
           <div className="border-t border-line pt-5">
             <button
               type="submit"
+              disabled={busy}
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-brand px-5 text-sm font-medium text-white transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
-              disabled={pending}
             >
-              <Save className="size-4" aria-hidden="true" />
-              {pending ? copy.auth.pending : copy.auth.submitProfile}
+            <Save className="size-4" aria-hidden="true" />
+            {busy ? copy.auth.pending : copy.auth.submitProfile}
             </button>
           </div>
         </div>

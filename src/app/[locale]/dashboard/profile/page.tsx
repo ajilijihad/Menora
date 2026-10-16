@@ -8,6 +8,7 @@ import { LoadingState } from "@/components/states/loading-state";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/locales";
 import { getAuthenticatedUser, getOwnProfile } from "@/modules/auth";
+import { profileAvatarUrl } from "@/lib/auth/avatar-url";
 
 type ProfilePageProps = {
   params: Promise<{ locale: string }>;
@@ -72,6 +73,7 @@ async function ProfileContent({ locale }: { locale: Locale }) {
         email={profile.email ?? user.email ?? ""}
         roleLabel={profile.is_platform_admin ? dict.admin.appointed : dict.admin.member}
         emailConfirmed={Boolean(user.email_confirmed_at)}
+        avatarUrl={profileAvatarUrl(profile.avatar_path)}
       />
     </main>
   );

@@ -43,6 +43,7 @@ export type Database = {
           email: string | null;
           full_name: string;
           is_platform_admin: boolean;
+          avatar_path: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -51,6 +52,7 @@ export type Database = {
           email?: string | null;
           full_name?: string;
           is_platform_admin?: boolean;
+          avatar_path?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -58,6 +60,7 @@ export type Database = {
           email?: string | null;
           full_name?: string;
           is_platform_admin?: boolean;
+          avatar_path?: string | null;
           updated_at?: string;
         };
         Relationships: [];

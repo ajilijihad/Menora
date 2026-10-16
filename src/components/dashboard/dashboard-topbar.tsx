@@ -22,6 +22,7 @@ type DashboardTopbarProps = {
   logoutLabel: string;
   languageLabel: string;
   displayName: string;
+  avatarUrl: string | null;
   isAdmin: boolean;
   businesses: SidebarBusiness[];
   selectorLabel: string;
@@ -36,6 +37,7 @@ export function DashboardTopbar({
   logoutLabel,
   languageLabel,
   displayName,
+  avatarUrl,
   isAdmin,
   businesses,
   selectorLabel,
@@ -97,7 +99,7 @@ export function DashboardTopbar({
         name={accountName}
         role={accountRole}
         initial={accountName.slice(0, 1).toUpperCase()}
-        logoUrl={current?.logoUrl ?? null}
+        logoUrl={current?.logoUrl ?? avatarUrl}
         profileHref={`/${locale}/dashboard/profile`}
         profileLabel={profileLabel}
         adminHref={isAdmin ? `/${locale}/admin` : null}

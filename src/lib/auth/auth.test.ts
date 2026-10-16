@@ -10,6 +10,7 @@ import {
 } from "./errors";
 import { clientIpFromForwarded } from "./ip";
 import { profileUpdatePayload, signUpOptions } from "./metadata";
+import { buildAvatarPath, isSafeAvatarPath, publicAvatarUrl } from "./avatar";
 import { authConfirmRedirect, safeNextPath } from "./paths";
 import { authRateLimits, createRateLimiter } from "./rate-limit";
 import { parseLogin, parseRegister, parseReset } from "./schemas";
@@ -238,5 +239,18 @@ describe("locale", () => {
   it("rejects a login with a missing password", () => {
     const parsed = parseLogin({ email: "layla@example.com", password: "" });
     assert.equal(parsed.ok, false);
+  });
+});
+
+describe("profile picture", () => {
+  it("keeps an avatar path inside the owner's folder and rejects anything else", () => {
+    const userId = "11111111-1111-4111-8111-111111111111";
+    const fileId = "22222222-2222-4222-8222-222222222222";
+    const path = buildAvatarPath(userId, "jpg", fileId);
+    assert.equal(isSafeAvatarPath(userId, path), true);
+    assert.equal(isSafeAvatarPath("33333333-3333-4333-8333-333333333333", path), false);
+    assert.equal(isSafeAvatarPath(userId, `${userId}/logo-${fileId}.jpg`), false);
+    assert.equal(publicAvatarUrl("https://example.supabase.co", path), `https://example.supabase.co/storage/v1/object/public/profile-media/${path}`);
+    assert.equal(publicAvatarUrl("https://example.supabase.co", "../secret.jpg"), null);
   });
 });
