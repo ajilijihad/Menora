@@ -117,6 +117,10 @@ export type AdminCopy = {
   appointed: string;
   member: string;
   paymentNote: string;
+  paymentsSearch: string;
+  paymentsIdPlaceholder: string;
+  paymentsReasonPlaceholder: string;
+  paymentsCopy: string;
   appointmentNote: string;
   adjustmentNote: string;
   analyticsNote: string;
@@ -441,6 +445,10 @@ export const adminCopyEn: AdminCopy = {
   appointed: "Administrator",
   member: "Member",
   paymentNote: "Completed payments are recorded only after PayPal verifies the capture. This screen cannot create a successful payment.",
+  paymentsSearch: "Search by order, capture, or refund reference",
+  paymentsIdPlaceholder: "Enter the PayPal payment id",
+  paymentsReasonPlaceholder: "Enter the reason for this refund",
+  paymentsCopy: "Copy reference",
   appointmentNote: "Administrator access comes from the platform administrator list. Changing a name or profile flag does not appoint anyone.",
   adjustmentNote: "A manual change requires a reason. It records the operator, the time in UTC, and the values before and after the change. It does not create a payment.",
   analyticsNote: "Counts of public menu and product views. Visitor identifiers are not shown.",
@@ -765,6 +773,10 @@ export const adminCopyAr: AdminCopy = {
   appointed: "مسؤول",
   member: "عضو",
   paymentNote: "تُسجَّل الدفعات المكتملة فقط بعد تحقق PayPal من القبض. لا يمكن لهذه الشاشة إنشاء دفعة ناجحة.",
+  paymentsSearch: "البحث برقم الطلب أو مرجع القبض أو مرجع الاسترداد",
+  paymentsIdPlaceholder: "أدخل معرّف دفعة PayPal",
+  paymentsReasonPlaceholder: "أدخل سبب الاسترداد",
+  paymentsCopy: "نسخ المرجع",
   appointmentNote: "يأتي وصول المسؤول من قائمة مسؤولي المنصة. تغيير الاسم أو علامة الملف الشخصي لا يعيّن أحدًا.",
   adjustmentNote: "يتطلب التعديل اليدوي سببًا. يُحفظ المشغّل والوقت بتوقيت UTC والقيم قبل التغيير وبعده. لا ينشئ هذا التعديل دفعة.",
   analyticsNote: "أعداد مشاهدات القائمة والمنتجات العامة. لا تُعرض معرّفات الزوار.",
