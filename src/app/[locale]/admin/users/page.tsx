@@ -6,6 +6,7 @@ import { Suspense } from "react";
 
 import { AdminNotice, adminWhen } from "@/components/admin/frame";
 import { UserSelectRow } from "@/components/admin/user-select-row";
+import { BusinessPlanSelect } from "@/components/admin/business-plan-select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select } from "@/components/ui/select";
 import { LoadingState } from "@/components/states/loading-state";
@@ -158,18 +159,25 @@ async function Users({ locale, searchParams }: { locale: Locale; searchParams: P
                         </td>
                         <td className="px-5 py-4 text-muted">{row.email || copy.empty}</td>
                         <td className="px-5 py-4">
-                          {row.businesses.length === 0 ? <span className="text-muted">{copy.noBusiness}</span> : (
-                            <ul className="flex flex-col gap-2">
-                              {row.businesses.map((item) => (
-                                <li key={item.id} className="flex items-center gap-2.5">
-                                  <BusinessMark url={businessMediaUrl(item.logoPath)} />
-                                  <span className="min-w-0">
-                                    <p className="font-medium text-foreground">{item.name}</p>
-                                    <p className="text-xs text-muted">{planSummary(item, copy, dict.billing.statuses)}</p>
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
+                          {row.businesses.length === 0 ? <span className="text-muted">{copy.noBusiness}</span> : row.businesses.length === 1 ? (
+                            <span className="flex items-center gap-2.5">
+                              <BusinessMark url={businessMediaUrl(row.businesses[0].logoPath)} />
+                              <span className="min-w-0">
+                                <p className="font-medium text-foreground">{row.businesses[0].name}</p>
+                                <p className="text-xs text-muted">{planSummary(row.businesses[0], copy, dict.billing.statuses)}</p>
+                              </span>
+                            </span>
+                          ) : (
+                            <BusinessPlanSelect
+                              label={copy.columns.plan}
+                              value={(current ? business?.id : undefined) ?? row.businesses[0].id}
+                              options={row.businesses.map((item) => ({
+                                value: item.id,
+                                label: `${item.name} · ${planSummary(item, copy, dict.billing.statuses)}`,
+                                href: `${usersHref(pathname, { q: list.term, page: list.page, user: row.id, business: item.id })}#user-details`,
+                                logoUrl: businessMediaUrl(item.logoPath),
+                              }))}
+                            />
                           )}
                         </td>
                         <td className="px-5 py-4">

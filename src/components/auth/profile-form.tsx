@@ -177,7 +177,11 @@ export function ProfileForm({ locale, copy, name, email, roleLabel, emailConfirm
             <button
               type="submit"
               disabled={busy}
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-brand px-5 text-sm font-medium text-white transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
+              className="inline-flex h-12 w-full items-center justify-center 
+              gap-2 rounded-full bg-brand px-5 text-sm font-medium text-white 
+              transition-colors hover:bg-brand-hover focus-visible:outline-none 
+              focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
+               disabled:cursor-wait disabled:opacity-60"
             >
             <Save className="size-4" aria-hidden="true" />
             {busy ? copy.auth.pending : copy.auth.submitProfile}
