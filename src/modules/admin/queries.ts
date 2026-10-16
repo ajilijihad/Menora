@@ -823,7 +823,7 @@ export async function loadPayments(input: { q?: string; status?: string; page?: 
   };
 }
 
-export async function loadEmailLogs(input: { q?: string; status?: string; page?: string }) {
+export async function loadEmailLogs(input: { q?: string; status?: string; page?: string; size?: string }) {
   const access = await requirePlatformAdmin();
   if (!access.ok) {
     return { denied: true as const };
@@ -831,7 +831,8 @@ export async function loadEmailLogs(input: { q?: string; status?: string; page?:
   const term = adminSearch(input.q);
   const status = allowedFilter(input.status, ["queued", "sent", "failed"]);
   const page = adminPage(input.page);
-  const range = pageRange(page);
+  const pageSize = adminListSize(input.size);
+  const range = pageRange(page, pageSize);
   let query = access.supabase
     .from("email_logs")
     .select("id, to_email, template, status, provider_message_id, error_message, created_at", { count: "exact" });
@@ -845,7 +846,7 @@ export async function loadEmailLogs(input: { q?: string; status?: string; page?:
   if (result.error) {
     return { failed: true as const };
   }
-  return { rows: result.data, total: result.count ?? 0, page, term, status, pageSize: adminPageSize };
+  return { rows: result.data, total: result.count ?? 0, page, term, status, pageSize };
 }
 
 export async function loadDomains(input: { q?: string; status?: string; page?: string }) {

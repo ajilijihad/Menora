@@ -101,6 +101,9 @@ export type AdminCopy = {
   queued: string;
   sent: string;
   failed: string;
+  emailsDescription: string;
+  emailsSearch: string;
+  copyMessage: string;
   save: string;
   create: string;
   suspend: string;
@@ -422,6 +425,9 @@ export const adminCopyEn: AdminCopy = {
   queued: "Queued",
   sent: "Sent",
   failed: "Failed",
+  emailsDescription: "View and track system emails sent to users.",
+  emailsSearch: "Search by email",
+  copyMessage: "Copy provider message",
   save: "Save plan",
   create: "Create plan",
   suspend: "Suspend",
@@ -743,6 +749,9 @@ export const adminCopyAr: AdminCopy = {
   queued: "في الانتظار",
   sent: "مُرسلة",
   failed: "فاشلة",
+  emailsDescription: "عرض رسائل النظام المرسلة إلى المستخدمين وتتبعها.",
+  emailsSearch: "البحث بالبريد",
+  copyMessage: "نسخ رسالة المزوّد",
   save: "حفظ الخطة",
   create: "إنشاء خطة",
   suspend: "إيقاف",
