@@ -41,6 +41,9 @@ export type HomepageEditorCopy = {
   logoTitle: string;
   logoHint: string;
   changeLogo: string;
+  iconTitle: string;
+  iconHint: string;
+  changeIcon: string;
   contactTitle: string;
   contactHint: string;
   socialHint: string;
@@ -176,6 +179,9 @@ const english: HomepageEditorCopy = {
   logoTitle: "Logo",
   logoHint: "Upload your website logo. It will appear in the header and footer.",
   changeLogo: "Change logo",
+  iconTitle: "Website icon",
+  iconHint: "Upload the icon shown in the browser tab. ICO, PNG, JPG, or WebP. Maximum 1.5 MB. Save the homepage after uploading.",
+  changeIcon: "Change icon",
   contactTitle: "Contact information",
   contactHint: "This information will appear on your public website.",
   socialHint: "Add your social media links. Only enabled links will appear on your website.",
@@ -318,6 +324,9 @@ const arabic: HomepageEditorCopy = {
   logoTitle: "الشعار",
   logoHint: "ارفع شعار الموقع. سيظهر في الترويسة والتذييل.",
   changeLogo: "تغيير الشعار",
+  iconTitle: "أيقونة الموقع",
+  iconHint: "ارفع الأيقونة التي تظهر في تبويب المتصفح. ICO أو PNG أو JPG أو WebP. الحد الأقصى 1.5 ميغابايت. احفظ الصفحة بعد الرفع.",
+  changeIcon: "تغيير الأيقونة",
   contactTitle: "معلومات التواصل",
   contactHint: "ستظهر هذه المعلومات في الموقع العام.",
   socialHint: "أضف روابط التواصل. تظهر الروابط المفعّلة فقط في الموقع.",

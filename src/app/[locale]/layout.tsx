@@ -6,6 +6,9 @@ import { Suspense, type ReactNode } from "react";
 import { HeaderFallback, SiteHeader } from "@/components/site-header";
 import { ThemeSync } from "@/components/theme/theme-toggle";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { EnvConfigError } from "@/lib/env/error";
+import { getPublicEnv } from "@/lib/env/public";
+import { homepageImageUrl } from "@/lib/homepage/media";
 import { localizedText } from "@/lib/homepage/schema";
 import { isLocale, localeDir } from "@/lib/i18n/locales";
 import { loadHomepage } from "@/modules/homepage/queries";
@@ -46,13 +49,33 @@ export async function generateMetadata({
   const dict = getDictionary(locale);
   const page = await loadHomepage();
   const brand = localizedText(page.content.site.name, locale).trim() || dict.brand;
+  let icon: string | null = null;
+  try {
+    icon = homepageImageUrl(getPublicEnv().NEXT_PUBLIC_SUPABASE_URL, page.content.site.iconPath);
+  } catch (error) {
+    if (!(error instanceof EnvConfigError)) {
+      throw error;
+    }
+  }
+  const iconPath = page.content.site.iconPath;
+  const type = icon ? faviconMime(iconPath) : undefined;
+  const descriptor = icon ? (type ? { url: icon, type } : icon) : "/brand-favicon.ico";
   return {
     title: {
       default: brand,
       template: `%s · ${brand}`,
     },
     description: dict.home.description,
+    icons: { icon: descriptor, shortcut: descriptor },
   };
+}
+
+function faviconMime(path: string) {
+  if (path.endsWith(".png")) return "image/png";
+  if (path.endsWith(".webp")) return "image/webp";
+  if (path.endsWith(".jpg") || path.endsWith(".jpeg")) return "image/jpeg";
+  if (path.endsWith(".ico")) return "image/x-icon";
+  return undefined;
 }
 
 export function generateStaticParams() {

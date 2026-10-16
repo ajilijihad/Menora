@@ -68,7 +68,7 @@ export function legacySectionAnchor(id: HomepageSectionId): string | null {
   return legacy && legacy !== current ? legacy : null;
 }
 
-const imagePathPattern = /^homepage\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp)$/;
+const imagePathPattern = /^homepage\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp|ico)$/;
 
 export function isHomepageImagePath(path: string): boolean {
   return imagePathPattern.test(path);
@@ -270,12 +270,14 @@ export const homepageSchema = z.object({
         localized(80),
       ),
       logoPath: z.string().optional().default(""),
+      iconPath: z.string().optional().default(""),
     })
     .optional()
-    .default({ name: { en: "", ar: "" }, logoPath: "" })
+    .default({ name: { en: "", ar: "" }, logoPath: "", iconPath: "" })
     .transform((site) => ({
       name: site.name,
       logoPath: site.logoPath && isHomepageImagePath(site.logoPath) ? site.logoPath : "",
+      iconPath: site.iconPath && isHomepageImagePath(site.iconPath) ? site.iconPath : "",
     })),
   seo: z.object({
     title: localized(70),
@@ -446,6 +448,7 @@ export function defaultHomepageContent(): HomepageContent {
     site: {
       name: text("", ""),
       logoPath: "",
+      iconPath: "",
     },
     contact: {
       email: "",

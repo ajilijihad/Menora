@@ -44,6 +44,7 @@ test("homepage content", async (t) => {
     assert.equal(kept.valid, true);
     assert.deepEqual(kept.content.site.name, { en: "", ar: "" });
     assert.equal(kept.content.site.logoPath, "");
+    assert.equal(kept.content.site.iconPath, "");
     const named = readHomepage({ ...content, site: { name: "  Grill  ", logoPath: "not-a-logo" } });
     assert.equal(named.valid, true);
     assert.equal(named.content.site.name.en, "Grill");
@@ -52,6 +53,10 @@ test("homepage content", async (t) => {
     const bilingual = readHomepage({ ...content, site: { name: { en: "Menor", ar: "مينور" }, logoPath: "" } });
     assert.equal(bilingual.valid, true);
     assert.equal(bilingual.content.site.name.ar, "مينور");
+    const icon = "homepage/00000000-0000-4000-8000-000000000001.ico";
+    const withIcon = readHomepage({ ...content, site: { ...content.site, iconPath: icon } });
+    assert.equal(withIcon.content.site.iconPath, icon);
+    assert.equal(readHomepage({ ...content, site: { ...content.site, iconPath: "favicon.ico" } }).content.site.iconPath, "");
     const legacyFooter = readHomepage({
       ...content,
       footer: {

@@ -496,6 +496,9 @@ function WebsiteFields({ copy, content, mediaBase, update, onNotice }: { copy: H
       <EditorCard title={copy.logoTitle} description={copy.logoHint}>
         <LogoField copy={copy} path={content.site.logoPath} mediaBase={mediaBase} onNotice={onNotice} onPath={(path) => update((draft) => { draft.site.logoPath = path; })} />
       </EditorCard>
+      <EditorCard title={copy.iconTitle} description={copy.iconHint}>
+        <LogoField copy={copy} path={content.site.iconPath} mediaBase={mediaBase} changeLabel={copy.changeIcon} accept="image/jpeg,image/png,image/webp,image/x-icon,image/vnd.microsoft.icon,.ico" icon onNotice={onNotice} onPath={(path) => update((draft) => { draft.site.iconPath = path; })} />
+      </EditorCard>
       <EditorCard icon={<Phone className="size-4" aria-hidden="true" />} iconClassName="bg-brand/10 text-brand" title={copy.contactTitle} description={copy.contactHint}>
         <div className="grid gap-4 md:grid-cols-2">
           <Field label={copy.fields.email}>
@@ -566,13 +569,14 @@ function IconInput({ icon, dir, children }: { icon: ReactNode; dir?: "ltr" | "rt
   );
 }
 
-function LogoField({ copy, path, mediaBase, onPath, onNotice }: { copy: HomepageEditorCopy; path: string; mediaBase: string | null; onPath: (path: string) => void; onNotice: (code: HomepageActionCode) => void }) {
+function LogoField({ copy, path, mediaBase, onPath, onNotice, changeLabel = copy.changeLogo, accept = "image/jpeg,image/png,image/webp", icon = false }: { copy: HomepageEditorCopy; path: string; mediaBase: string | null; onPath: (path: string) => void; onNotice: (code: HomepageActionCode) => void; changeLabel?: string; accept?: string; icon?: boolean }) {
   const [uploading, setUploading] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const src = mediaBase ? homepageImageUrl(mediaBase, path) : null;
 
   async function upload(file: File) {
-    if (!imageExtension(file.type)) {
+    const websiteIcon = icon && (file.type === "image/x-icon" || file.type === "image/vnd.microsoft.icon" || file.name.toLowerCase().endsWith(".ico"));
+    if (!imageExtension(file.type) && !websiteIcon) {
       onNotice("image_type");
       return;
     }
@@ -583,6 +587,9 @@ function LogoField({ copy, path, mediaBase, onPath, onNotice }: { copy: Homepage
     setUploading(true);
     const data = new FormData();
     data.set("file", file);
+    if (icon) {
+      data.set("kind", "icon");
+    }
     const result = await uploadHomepageImageAction(data);
     if (!result.ok) {
       setUploading(false);
@@ -618,8 +625,8 @@ function LogoField({ copy, path, mediaBase, onPath, onNotice }: { copy: Homepage
           )}
         </span>
         <label className={`inline-flex h-10 cursor-pointer items-center rounded-xl border border-line bg-surface px-4 text-sm font-medium text-foreground hover:bg-surface-muted focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand ${uploading ? "pointer-events-none opacity-60" : ""}`}>
-          {copy.changeLogo}
-          <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={uploading} onChange={(event) => {
+          {changeLabel}
+          <input type="file" accept={accept} className="sr-only" disabled={uploading} onChange={(event) => {
             const file = event.target.files?.[0];
             event.target.value = "";
             if (file) {
@@ -631,7 +638,7 @@ function LogoField({ copy, path, mediaBase, onPath, onNotice }: { copy: Homepage
           <Trash2 className="size-4" aria-hidden="true" />
         </button>
       </div>
-      <p className="mt-3 text-xs text-muted">{copy.imageHint}</p>
+      {icon ? null : <p className="mt-3 text-xs text-muted">{copy.imageHint}</p>}
       {confirming ? <ConfirmPopup copy={copy} onCancel={() => setConfirming(false)} onConfirm={() => { void remove(); }} /> : null}
     </div>
   );
