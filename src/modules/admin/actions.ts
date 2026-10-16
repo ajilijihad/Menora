@@ -50,6 +50,14 @@ function usersNotice(locale: string, notice: string, formData: FormData): string
   if (page > 1) {
     params.set("page", String(page));
   }
+  const user = String(formData.get("user") ?? "").trim();
+  const business = String(formData.get("businessId") ?? "").trim();
+  if (uuidPattern.test(user)) {
+    params.set("user", user);
+  }
+  if (uuidPattern.test(business)) {
+    params.set("business", business);
+  }
   return `/${locale}/admin/users?${params.toString()}`;
 }
 

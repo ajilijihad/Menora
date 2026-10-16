@@ -83,6 +83,7 @@ export type AdminCopy = {
   noBusiness: string;
   noPlan: string;
   noUpgrade: string;
+  selectUser: string;
   search: string;
   status: string;
   all: string;
@@ -403,6 +404,7 @@ export const adminCopyEn: AdminCopy = {
   noBusiness: "No business",
   noPlan: "No active plan",
   noUpgrade: "No higher plan is available.",
+  selectUser: "Select a user to view their details and update a plan.",
   search: "Search",
   status: "Status",
   all: "All",
@@ -723,6 +725,7 @@ export const adminCopyAr: AdminCopy = {
   noBusiness: "لا يوجد عمل",
   noPlan: "لا توجد خطة نشطة",
   noUpgrade: "لا توجد خطة أعلى.",
+  selectUser: "اختر مستخدمًا لعرض بياناته وتحديث خطته.",
   search: "بحث",
   status: "الحالة",
   all: "الكل",

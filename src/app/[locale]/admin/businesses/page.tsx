@@ -127,10 +127,11 @@ async function Businesses({ locale, searchParams }: { locale: Locale; searchPara
           <p className="px-5 py-10 text-sm text-muted">{copy.empty}</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[40rem] text-sm">
+            <table className="w-full min-w-[56rem] text-sm">
               <thead>
                 <tr className="border-b border-line bg-brand/[0.04] text-start">
                   <th className="px-5 py-3.5 font-medium text-foreground">{copy.columns.business}</th>
+                  <th className="px-5 py-3.5 font-medium text-foreground">{copy.recordId}</th>
                   <th className="px-5 py-3.5 font-medium text-foreground">{copy.columns.owner}</th>
                   <th className="px-5 py-3.5 font-medium text-foreground">{copy.status}</th>
                 </tr>
@@ -150,6 +151,9 @@ async function Businesses({ locale, searchParams }: { locale: Locale; searchPara
                             <p className="mt-0.5 text-xs text-muted">{row.slug}</p>
                           </span>
                         </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="font-mono text-xs text-muted">{row.id}</span>
                       </td>
                       <td className="px-5 py-4">
                         <span className="inline-flex items-center gap-2.5 text-foreground">

@@ -60,13 +60,19 @@ async function ProfileContent({ locale }: { locale: Locale }) {
   }
 
   return (
-    <AuthScreen title={dict.nav.profile} description={dict.auth.profileDescription}>
+    <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 py-2">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{dict.nav.profile}</h1>
+        <p className="mt-2 max-w-xl text-sm leading-6 text-muted">{dict.auth.profileDescription}</p>
+      </div>
       <ProfileForm
         locale={locale}
         copy={dict}
         name={profile.full_name}
         email={profile.email ?? user.email ?? ""}
+        roleLabel={profile.is_platform_admin ? dict.admin.appointed : dict.admin.member}
+        emailConfirmed={Boolean(user.email_confirmed_at)}
       />
-    </AuthScreen>
+    </main>
   );
 }

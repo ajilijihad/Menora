@@ -50,6 +50,9 @@ export type Dictionary = {
     verifyTitle: string;
     verifyDescription: string;
     profileDescription: string;
+    emailStatus: string;
+    verified: string;
+    unverified: string;
     name: string;
     email: string;
     password: string;
@@ -156,6 +159,9 @@ const en = {
     verifyTitle: "Check your email",
     verifyDescription: "Open the confirmation link to activate your account, then log in.",
     profileDescription: "Update the name on your account. Your email stays tied to sign-in and cannot be changed here.",
+    emailStatus: "Email status",
+    verified: "Verified",
+    unverified: "Unverified",
     name: "Name",
     email: "Email",
     password: "Password",
@@ -285,6 +291,9 @@ const ar = {
     verifyTitle: "تحقق من بريدك",
     verifyDescription: "افتح رابط التأكيد لتفعيل الحساب، ثم سجّل الدخول.",
     profileDescription: "حدّث الاسم في حسابك. يبقى البريد مرتبطًا بتسجيل الدخول ولا يمكن تغييره هنا.",
+    emailStatus: "حالة البريد",
+    verified: "موثّق",
+    unverified: "غير موثّق",
     name: "الاسم",
     email: "البريد الإلكتروني",
     password: "كلمة المرور",
