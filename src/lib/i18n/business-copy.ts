@@ -9,6 +9,17 @@ export type BusinessCopy = {
   overviewDescription: string;
   deleteTitle: string;
   deleteDescription: string;
+  dangerZone: string;
+  deleteWarningTitle: string;
+  deleteWarningBody: string;
+  publicUrlLabel: string;
+  confirmPrompt: string;
+  confirmPlaceholder: string;
+  confirmExact: string;
+  acknowledgeLabel: string;
+  acknowledgeHint: string;
+  cancelReturn: string;
+  breadcrumbLabel: string;
   readOnly: string;
   selectorLabel: string;
   addBusiness: string;
@@ -93,8 +104,20 @@ export const businessCopyEn: BusinessCopy = {
   settingsTitle: "Settings",
   settingsDescription: "Manage your business information, opening hours, social links, and more.",
   overviewDescription: "This business is a draft until you publish a menu later.",
-  deleteTitle: "Delete this business",
-  deleteDescription: "This removes the business, its membership, and its logo and cover. Type the public slug to confirm.",
+  deleteTitle: "Delete business",
+  deleteDescription: "This action will permanently remove the business and all of its data from your account.",
+  dangerZone: "Danger zone",
+  deleteWarningTitle: "Permanently delete this business?",
+  deleteWarningBody:
+    "This will remove the business, its menu, categories, products, settings, and membership, and delete the uploaded logo and cover. This action cannot be undone.",
+  publicUrlLabel: "Public URL",
+  confirmPrompt: "To confirm, type {slug} below",
+  confirmPlaceholder: "Enter business slug",
+  confirmExact: "The value must match {slug} exactly.",
+  acknowledgeLabel: "I understand this action is permanent",
+  acknowledgeHint: "Once deleted, all data, files, and settings for this business will be permanently removed.",
+  cancelReturn: "Cancel and return to settings",
+  breadcrumbLabel: "Breadcrumb",
   readOnly: "You can view this business. Owners and managers can edit it.",
   selectorLabel: "Business",
   addBusiness: "Add a business",
@@ -130,7 +153,7 @@ export const businessCopyEn: BusinessCopy = {
     logo: "Logo",
     cover: "Cover image",
     confirmSlug: "Type the public slug",
-    confirmHint: "This must match the slug exactly.",
+    confirmHint: "Enter the business slug exactly as shown. This helps prevent accidental deletion.",
   },
   types: {
     restaurant: "Restaurant",
@@ -238,8 +261,20 @@ export const businessCopyAr: BusinessCopy = {
   settingsTitle: "الإعدادات",
   settingsDescription: "أدِر معلومات العمل وساعات العمل وروابط التواصل والمزيد.",
   overviewDescription: "يبقى هذا العمل مسودة إلى أن تنشر قائمة لاحقًا.",
-  deleteTitle: "حذف هذا العمل",
-  deleteDescription: "يحذف هذا العمل وعضويته وشعاره وصورة الغلاف. اكتب المعرّف العام للتأكيد.",
+  deleteTitle: "حذف العمل",
+  deleteDescription: "سيحذف هذا الإجراء العمل وكل بياناته من حسابك بشكل دائم.",
+  dangerZone: "منطقة الخطر",
+  deleteWarningTitle: "حذف هذا العمل نهائيًا؟",
+  deleteWarningBody:
+    "سيُزال العمل وقائمته وأقسامه ومنتجاته وإعداداته وعضويته، ويُحذف الشعار وصورة الغلاف المرفوعان. لا يمكن التراجع عن هذا الإجراء.",
+  publicUrlLabel: "الرابط العام",
+  confirmPrompt: "للتأكيد، اكتب {slug} أدناه",
+  confirmPlaceholder: "أدخل معرّف العمل",
+  confirmExact: "يجب أن تطابق القيمة {slug} تمامًا.",
+  acknowledgeLabel: "أفهم أن هذا الإجراء دائم",
+  acknowledgeHint: "بعد الحذف، ستُزال بيانات هذا العمل وملفاته وإعداداته بشكل دائم.",
+  cancelReturn: "إلغاء والعودة إلى الإعدادات",
+  breadcrumbLabel: "مسار الصفحة",
   readOnly: "يمكنك عرض هذا العمل. المالكون والمديرون هم من يعدّلونه.",
   selectorLabel: "العمل",
   addBusiness: "إضافة عمل",
@@ -275,7 +310,7 @@ export const businessCopyAr: BusinessCopy = {
     logo: "الشعار",
     cover: "صورة الغلاف",
     confirmSlug: "اكتب المعرّف العام",
-    confirmHint: "يجب أن يطابق المعرّف تمامًا.",
+    confirmHint: "أدخل معرّف العمل كما هو ظاهر تمامًا. يساعد ذلك على منع الحذف غير المقصود.",
   },
   types: {
     restaurant: "مطعم",

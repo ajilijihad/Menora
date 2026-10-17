@@ -27,6 +27,7 @@ import {
 import { uniqueSlug } from "@/lib/businesses/slug";
 import { EnvConfigError } from "@/lib/env/error";
 import type { Json } from "@/lib/supabase/database.types";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getAuthenticatedUser } from "@/modules/auth";
 import { canAddBusiness } from "@/modules/billing/queries";
@@ -58,6 +59,18 @@ async function requestIp() {
 async function sessionClient() {
   try {
     return await createServerSupabaseClient();
+  } catch (error) {
+    if (error instanceof EnvConfigError) {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+function adminClient() {
+  try {
+    return createAdminSupabaseClient();
   } catch (error) {
     if (error instanceof EnvConfigError) {
       return null;
@@ -119,7 +132,13 @@ function imageChoice(entry: FormDataEntryValue | null, remove: boolean): ImageCh
 }
 
 async function removeStoredObject(
-  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  supabase: {
+    storage: {
+      from: (bucket: string) => {
+        remove: (paths: string[]) => Promise<unknown>;
+      };
+    };
+  },
   businessId: string,
   path: string | null,
 ) {
@@ -411,18 +430,34 @@ export async function deleteBusinessAction(
     return { status: "error", message: "rate_limited", confirmSlug };
   }
 
-  const supabase = await sessionClient();
-  if (!supabase) {
+  const admin = adminClient();
+  if (!admin) {
     return { status: "error", message: "unconfigured", confirmSlug };
   }
 
-  await removeStoredObject(supabase, current.id, current.logoPath);
-  await removeStoredObject(supabase, current.id, current.coverPath);
-
-  const { error } = await supabase.from("businesses").delete().eq("id", current.id);
-  if (error) {
+  // The signed-in owner cannot delete the automatic subscription row or the
+  // owner membership. Those constraints reject the business delete. The
+  // service role removes them only after the checks above succeed.
+  const removedPayments = await admin.from("payments").delete().eq("business_id", current.id);
+  if (removedPayments.error) {
+    console.error(`business payment cleanup failed: ${removedPayments.error.message}`);
     return { status: "error", message: "save_failed", confirmSlug };
   }
+
+  const removedSubscriptions = await admin.from("subscriptions").delete().eq("business_id", current.id);
+  if (removedSubscriptions.error) {
+    console.error(`business subscription cleanup failed: ${removedSubscriptions.error.message}`);
+    return { status: "error", message: "save_failed", confirmSlug };
+  }
+
+  const { error } = await admin.from("businesses").delete().eq("id", current.id);
+  if (error) {
+    console.error(`business delete failed: ${error.message}`);
+    return { status: "error", message: "save_failed", confirmSlug };
+  }
+
+  await removeStoredObject(admin, current.id, current.logoPath);
+  await removeStoredObject(admin, current.id, current.coverPath);
 
   revalidatePath(`/${locale}/dashboard`);
   refreshPublicMenu(current.slug);
