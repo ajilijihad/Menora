@@ -76,13 +76,14 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-html:has([data-marketing]) {
+/* Inactive routes stay mounted with display:none. Only the visible route should hide the site header. */
+html:has([data-marketing]:not([style*="display: none"])) {
   scroll-behavior: smooth;
 }
 
-body:has([data-public-menu]) > header,
-body:has([data-dashboard]) > header,
-body:has([data-marketing]) > header,
-body:has([data-auth]) > header {
+body:has([data-public-menu]:not([style*="display: none"])) > header,
+body:has([data-dashboard]:not([style*="display: none"])) > header,
+body:has([data-marketing]:not([style*="display: none"])) > header,
+body:has([data-auth]:not([style*="display: none"])) > header {
   display: none !important;
 }
