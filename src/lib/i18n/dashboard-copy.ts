@@ -56,6 +56,14 @@ export type DashboardCopy = {
   openPublicMenu: string;
   moreActions: string;
   openDashboard: string;
+  statUsers: string;
+  statScans: string;
+  statProducts: string;
+  statUsersHint: string;
+  statScansHint: string;
+  statCategoriesHint: string;
+  statProductsHint: string;
+  statUnavailable: string;
   setupHint: string;
   completed: string;
   allSteps: string;
@@ -145,6 +153,14 @@ export const dashboardCopyEn: DashboardCopy = {
   openPublicMenu: "Open menu",
   moreActions: "More actions",
   openDashboard: "Open dashboard",
+  statUsers: "Users",
+  statScans: "Menu scans",
+  statProducts: "Products",
+  statUsersHint: "People who can manage this business.",
+  statScansHint: "Times the public menu was opened, including from a QR code.",
+  statCategoriesHint: "Categories saved for this business.",
+  statProductsHint: "Products saved for this business.",
+  statUnavailable: "Unavailable",
   setupHint: "Complete these steps to finish setting up your business and get the most out of Menor.",
   completed: "Completed",
   allSteps: "All steps are finished!",
@@ -234,6 +250,14 @@ export const dashboardCopyAr: DashboardCopy = {
   openPublicMenu: "فتح القائمة",
   moreActions: "المزيد",
   openDashboard: "فتح لوحة العمل",
+  statUsers: "المستخدمون",
+  statScans: "مسح القائمة",
+  statProducts: "المنتجات",
+  statUsersHint: "الأشخاص الذين يمكنهم إدارة هذا العمل.",
+  statScansHint: "عدد مرات فتح القائمة العامة، بما في ذلك عبر رمز QR.",
+  statCategoriesHint: "الأقسام المحفوظة لهذا العمل.",
+  statProductsHint: "المنتجات المحفوظة لهذا العمل.",
+  statUnavailable: "غير متاح",
   setupHint: "أكمل هذه الخطوات لإنهاء إعداد عملك والاستفادة من مينور.",
   completed: "مكتمل",
   allSteps: "اكتملت كل الخطوات!",

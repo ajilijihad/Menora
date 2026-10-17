@@ -106,6 +106,59 @@ export async function listMyBusinesses(): Promise<BusinessRecord[]> {
   return businesses;
 }
 
+export type BusinessCardStats = {
+  users: number | null;
+  scans: number | null;
+  categories: number | null;
+  products: number | null;
+};
+
+const emptyCardStats: BusinessCardStats = { users: null, scans: null, categories: null, products: null };
+
+async function exactCount(
+  query: PromiseLike<{ count: number | null; error: { message: string } | null }>,
+): Promise<number | null> {
+  try {
+    const result = await query;
+    if (result.error) {
+      return null;
+    }
+    return result.count ?? 0;
+  } catch {
+    return null;
+  }
+}
+
+export async function loadBusinessCardStats(businessIds: string[]): Promise<Map<string, BusinessCardStats>> {
+  const stats = new Map<string, BusinessCardStats>();
+  for (const id of businessIds) {
+    stats.set(id, emptyCardStats);
+  }
+  if (businessIds.length === 0) {
+    return stats;
+  }
+
+  const supabase = await createServerSupabaseClient();
+  await Promise.all(
+    businessIds.map(async (id) => {
+      const [users, scans, categories, products] = await Promise.all([
+        exactCount(supabase.from("business_members").select("id", { count: "exact", head: true }).eq("business_id", id)),
+        exactCount(
+          supabase
+            .from("analytics_events")
+            .select("id", { count: "exact", head: true })
+            .eq("business_id", id)
+            .eq("event_name", "menu_view"),
+        ),
+        exactCount(supabase.from("menu_categories").select("id", { count: "exact", head: true }).eq("business_id", id)),
+        exactCount(supabase.from("menu_products").select("id", { count: "exact", head: true }).eq("business_id", id)),
+      ]);
+      stats.set(id, { users, scans, categories, products });
+    }),
+  );
+  return stats;
+}
+
 export async function getMyBusiness(businessId: string): Promise<BusinessRecord | null> {
   const id = parseBusinessId(businessId);
   const user = await getAuthenticatedUser();

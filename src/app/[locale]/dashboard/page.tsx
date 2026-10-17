@@ -7,6 +7,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 
 import { Notice } from "@/components/auth/notice";
+import { BusinessStats } from "@/components/dashboard/business-stats";
 import { SetupProgress } from "@/components/business/setup-progress";
 import { LoadingState } from "@/components/states/loading-state";
 import { statusActionClassName } from "@/components/states/status-panel";
@@ -18,7 +19,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/locales";
 import { getAuthenticatedUser, getOwnProfile } from "@/modules/auth";
 import { businessPlanUsage } from "@/modules/billing/queries";
-import { listMyBusinesses } from "@/modules/businesses/queries";
+import { listMyBusinesses, loadBusinessCardStats } from "@/modules/businesses/queries";
 
 type DashboardPageProps = {
   params: Promise<{ locale: string }>;
@@ -73,6 +74,7 @@ async function DashboardContent({
   const profile = user ? await getOwnProfile() : null;
   const displayName = profile?.full_name || profile?.email || user?.email || "";
   const memberships = user ? await listMyBusinesses() : [];
+  const cardStats = await loadBusinessCardStats(memberships.map((business) => business.id));
   let usage: { used: number; limit: number; canAdd: boolean } | null = null;
   if (user) {
     try {
@@ -118,6 +120,7 @@ async function DashboardContent({
             const logo = businessMediaUrl(business.logoPath);
             const dashboardHref = `/${locale}/dashboard/businesses/${business.id}`;
             const settingsHref = `${dashboardHref}/settings`;
+            const stats = cardStats.get(business.id) ?? { users: null, scans: null, categories: null, products: null };
             return (
               <article key={business.id} className="rounded-3xl border border-line bg-surface p-4 shadow-[var(--shadow-card)] sm:p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -152,6 +155,24 @@ async function DashboardContent({
                       </div>
                     </details>
                   </div>
+                </div>
+                <div className="mt-4">
+                  <BusinessStats
+                    locale={locale}
+                    users={stats.users}
+                    scans={stats.scans}
+                    categories={stats.categories}
+                    products={stats.products}
+                    usersLabel={home.statUsers}
+                    scansLabel={home.statScans}
+                    categoriesLabel={home.categories}
+                    productsLabel={home.statProducts}
+                    usersHint={home.statUsersHint}
+                    scansHint={home.statScansHint}
+                    categoriesHint={home.statCategoriesHint}
+                    productsHint={home.statProductsHint}
+                    unavailableLabel={home.statUnavailable}
+                  />
                 </div>
                 <div className="mt-4">
                   <SetupProgress
